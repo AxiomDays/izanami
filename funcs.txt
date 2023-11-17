@@ -1,0 +1,102 @@
+status_stats (){
+        for stat in "${!stats[@]}"
+do
+        echo "$stat : ${stats[$stat]} + ${eqstats[$stat]}"
+done
+}
+
+status_equip (){
+for eq in "${!equip[@]}"
+do
+        echo "$eq : ${equip[$eq]}"
+done
+}
+
+save(){
+echo "
+name=${name}
+age=${age}
+class=${class}
+declare -A stats=(
+["STR"]=${stats[STR]}
+["INT"]=${stats[INT]}
+["WIS"]=${stats[WIS]}
+["END"]=${stats[END]}
+["GUI"]=${stats[GUI]}
+["AGI"]=${stats[AGI]}
+["MaxHP"]=${stats[MaxHP]}
+["HP"]=${stats[HP]}
+["STA"]=${stats[STA]}
+)
+
+declare -A flags=(
+["menuState"]=0
+["battleState"]=0
+["loadflag"]=${flags[loadflag]}
+["saveflag"]=${flags[saveflag]}
+)
+
+declare -A eqstats=(
+["STR"]=${eqstats[STR]}
+["INT"]=${eqstats[INT]}
+["END"]=${eqstats[END]}
+["AGI"]=${eqstats[AGI]}
+["WIS"]=${eqstats[WIS]}
+)
+
+declare -A equip=(
+["HEAD"]=${equip[HEAD]}
+["BODY"]=${equip[BODY]}
+["WEAPON"]=${equip[WEAPON]}
+)
+" > save.conf
+}
+
+whom(){
+        echo "Your name is ${name}. You are a ${age}-year old ${class} with ${stats[HP]} HP and ${stats[STA]} Stamina. "
+}
+
+equip_check () {
+	eqstats[STR]=0
+	eqstats[INT]=0
+	eqstats[END]=0
+	eqstats[AGI]=0
+        eqstats[WIS]=0	
+	case ${equip[HEAD]} in
+		Turban)
+			echo "${equip[HEAD]} Equipped"
+			eqstats[END]=$((eqstats[END]+2))
+			eqstats[WIS]=$((eqstats[WIS]+2))
+			;;
+		WoolCap)
+			echo "${equip[HEAD]} Equipped"
+			eqstats[END]=$((eqstats[END]+3))
+                        eqstats[AGI]=$((eqstats[AGI]+2))
+                        ;;
+		Helmet)
+			echo "${equip[HEAD]} Equipped"
+			eqstats[END]=$((eqstats[END]+3))
+                        eqstats[STR]=$((eqstats[STR]+4))
+                        ;;
+		WitchHat)
+			echo "${equip[HEAD]} Equipped"
+			eqstats[INT]=$((eqstats[END]+4))
+                        eqstats[WIS]=$((eqstats[WIS]+2))
+                        ;;
+	esac
+
+	case ${equip[BODY]} in
+		Shirt)
+			echo "${equip[BODY]} Equipped"
+                        eqstats[END]=$((eqstats[END]+5))
+                        ;;
+		Lthr.Armor)
+			echo "${equip[BODY]} Equipped"
+                        eqstats[END]=$((eqstats[END]+7))
+			eqstats[AGI]=$((eqstats[AGI]-3))
+                        ;;
+	esac
+
+}
+
+
