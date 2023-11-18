@@ -26,6 +26,7 @@ declare -A stats=(
 ["AGI"]=${stats[AGI]}
 ["MaxHP"]=${stats[MaxHP]}
 ["HP"]=${stats[HP]}
+["MaxSTA"]=${stats[MaxSTA]}
 ["STA"]=${stats[STA]}
 )
 
@@ -34,6 +35,13 @@ declare -A flags=(
 ["battleState"]=0
 ["loadflag"]=${flags[loadflag]}
 ["saveflag"]=${flags[saveflag]}
+)
+
+declare -A resources=(
+["LVL"]=1
+["EXP"]=0
+["NEXP"]=100
+["GOLD"]=0
 )
 
 declare -A eqstats=(
