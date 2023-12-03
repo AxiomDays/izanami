@@ -1,0 +1,109 @@
+derived_check(){
+SUM_HP1=$((stats[END]+eqstats[END]))
+SUM_HP2=$((stats[WIS]+eqstats[WIS]))
+derived[MaxHP]=$(((SUM_HP1*10)+(SUM_HP2*3)))
+derived[HP]=${derived[MaxHP]}
+derived[MaxSTA]=$(((stats[AGI]+stats[END]+eqstats[AGI]+eqstats[END])*3))
+derived[STA]=${derived[MaxSTA]}
+}
+
+level_up(){
+	echo "You've ascended to level ${resources[LVL]}!"
+	for stat in "${!stats[@]}"
+	do
+        	echo "$stat : ${stats[$stat]} + ${eqstats[$stat]}"
+	done
+	sleep 1
+	#add mandatory hp inc
+	#add class based stat inc
+	PS3="Pick 2 stats: "
+	i=0
+	case $class in
+		Farmer)
+			stats[STR]=$((stats[STR]+1))
+			stats[END]=$((stats[END]+1))
+			echo "STR and END gained"
+			;;
+		${agech1})
+			stats[STR]=$((stats[STR]+1))
+			stats[GUI]=$((stats[GUI]+1))
+			echo "STR and GUI gained"
+			;;
+		Doctor)
+			stats[INT]=$((stats[INT]+1))
+			stats[WIS]=$((stats[WIS]+1))
+			echo "INT and WIS gained"
+			;;
+		Destitute)
+			 stats[STR]=$((stats[STR]+1))
+			 stats[WIS]=$((stats[WIS]+1))
+			 stats[INT]=$((stats[INT]+1))
+			 stats[GUI]=$((stats[GUI]+1))
+			 stats[AGI]=$((stats[AGI]+1))
+			 stats[END]=$((stats[END]+1))
+			 echo "ALL gained."
+			;;
+		Ronin)
+			stats[STR]=$((stats[STR]+1))
+			stats[AGI]=$((stats[AGI]+1))
+			echo "STR and AGI gained"
+			;;
+		Shinobi)
+			stats[AGI]=$((stats[AGI]+1))
+			stats[INT]=$((stats[INT]+1))
+			echo "AGI and INT gained"
+			;;
+
+	esac
+	sleep 1
+	while [[ "$i" -lt 2 ]];
+	do
+		i=$((i+1))
+		select stat in STR WIS INT GUI AGI END
+		do
+			case $stat in
+				STR)
+					stats[STR]=$((stats[STR]+1))
+					break;;
+				WIS)
+                                        stats[WIS]=$((stats[WIS]+1))
+					break;;
+				INT)
+                                        stats[INT]=$((stats[INT]+1))
+					break;;
+				GUI)
+                                        stats[GUI]=$((stats[GUI]+1))
+					break;;
+				AGI)
+                                        stats[AGI]=$((stats[AGI]+1))
+					break;;
+				END)
+                                        stats[END]=$((stats[END]+1))
+					break;;
+			esac
+		done
+	done
+	sleep 1
+	derived_check
+	for stat in "${!stats[@]}"
+	do
+        	echo "$stat : ${stats[$stat]} + ${eqstats[$stat]}"
+	done
+	echo "Max HP : ${derived[MaxHP]}"
+	echo "Max Stamina : ${derived[MaxSTA]}"
+}
+
+give_exp(){
+	echo "exp entered $1"
+	sleep 1
+	local exp=("$1")
+	echo "current exp $1"
+	resources[EXP]=$((resources[EXP]+exp))
+	if [[ "${resources[EXP]}" -ge "${resources[NEXP]}" ]]; then
+		resources[EXP]=$((resources[EXP]-resources[NEXP]))
+		resources[NEXP]=$((resources[NEXP]*2))
+		resources[LVL]=$((resources[LVL]+1))
+		level_up
+	fi
+
+}

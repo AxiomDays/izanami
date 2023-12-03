@@ -1,0 +1,849 @@
+declare -a playerMagArr=("Scathe" "Flood" "Blitz" "Hurricane")
+battle (){
+turncount=0
+time=0
+chargevar=0
+buffValue=0
+activeSpellElement="None"
+local enemy=("$@")
+for eq in "${!enemy[@]}"
+do
+        echo "$eq : ${enemy[$eq]}"
+done
+ echo "Fight Started"
+while [[ "${enemy[0]}" > 0 ]];
+do
+	derived[STA]=$((derived[STA]+(stats[AGI]/2)))
+        if [[ "${derived[STA]}" -gt "${derived[MaxSTA]}" ]]; then
+                derived[STA]=${derived[MaxSTA]}
+        fi
+	whom
+	turncount=$((turncount+1))
+	if [[ "${statusfx[EnExhaust]}" = 1 ]]; then
+		echo "Your energy is being drained! You lose $((derived[MaxSTA]/4)) stamina."
+		derived[STA]=$((derived[STA]-(derived[MaxSTA]/4)))
+	fi
+	if [[ "${statusfx[toxin]}" = 1 ]]; then
+		echo "Toxin floods your lungs! You lose $((derived[MaxHP]/7)) HP."
+                derived[HP]=$((derived[HP]-(derived[MaxHP]/7)))
+        fi
+	if [[ "${bloodvow}" = 1 ]]; then
+		bftime=$((bftime+1))
+		derived[HP]=$((derived[HP]-(derived[MaxHP]/5)))
+		derived[STA]=$((derived[STA]-(derived[MaxSTA]/10)))
+		if [[ "$bftime" -ge 3 ]]; then
+                        bloodvow=0
+                        stats[STR]=$((stats[STR]-stats[GUI]))
+                fi
+		 echo "Your bloodvow takes effect! You lose $((derived[MaxHP]/5)) HP and $((derived[MaxSTA]/10)) Stamina"
+	fi
+	PS3="Pick a number: "
+	select option in Fight Magic Defend Heal Technique NinjaTools Item Run
+	do
+		case $option in
+			Fight)
+				#add a miss chance
+				DEF=3
+				echo "${enemy[0]}"
+				ranny=$((RANDOM % 12 + 1))
+				hitchance=$((RANDOM % (100/(stats[AGI]+eqstats[AGI])) + 1))
+				if [[ "${hitchance}" -gt 6 ]]; then
+					echo "You missed!"
+					sleep 1
+					break
+				fi
+				POW=$(((stats[STR]+eqstats[STR]+buffValue)))
+				if [[ "$ranny" -gt 10 ]]; then
+					POWfact="Decisive"
+					fightmod=2
+				elif [[ "$ranny" -ge 4 ]]; then
+					POWfact="Solid"
+					fightmod=1
+				else
+					POWfact="Weak"
+					fightmod=1
+				fi
+				if [[ "${activeElement}" = "${enemy[5]}" ]]; then
+					fightmod=$((fightmod*2))
+					echo "Your weapon strikes at its weakness!"
+				fi
+				enemy[0]=$((enemy[0]-(POW*fightmod)))
+				echo "Enemy took a ${POWfact} hit and lost $((POW*fightmod)) HP"
+				echo "${enemy[0]}"
+				break;;
+			Magic)
+				DEF=3
+				select spell in ${playerMagArr[@]}
+				do
+					 echo "${enemy[0]}"
+					case $spell in
+						Scathe)
+							 if [[ "${resources[MAG]}" -le 5 ]]; then
+                                                                        echo "You're out of MAG!"
+                                                                        continue
+                                                         fi
+							 echo "The Hellish flames of Sage Veneer that burn eternally"
+							 read -p "[y/n]" respmag
+							 if [[ "$respmag" != y ]]; then
+								 continue
+							 fi
+							 POW=$(((stats[INT]+eqstats[INT])*2))
+							 if [[ "${enemy[5]}" = "Fire" ]]; then
+								 POW=$((POW*2))
+								 echo "The enemy is weak!"
+							 fi
+                                                         enemy[0]=$((enemy[0]-POW))
+							 echo "The enemy is consumed by an explosion of flames, taking $((POW)) damage!"
+							 sleep 1
+                                                         resources[MAG]=$((resources[MAG]-5))
+							 if [[ "$activeSpellElement" = "Wind" ]]; then
+                                                                 enemy[0]=$((enemy[0]-POW/2))
+                                                                 echo "A concurrence occurs! Your flames and wind combine to deal $((POW/2)) damage!"
+								 whom
+								 activeSpellElement="None"
+								 break
+                                                         fi
+							 activeSpellElement="Fire"
+                                                         whom
+                                                         break;;
+						Flood)
+                                                         if [[ "${resources[MAG]}" -le 5 ]]; then
+                                                                        echo "You're out of MAG!"
+                                                                        continue
+                                                         fi
+                                                         echo "Channel the crushing weight of Great Serpent's Seas"
+                                                         read -p "[y/n]" respmag
+                                                         if [[ "$respmag" != y ]]; then
+                                                                 continue
+                                                         fi
+							 POW=$(((stats[INT]+eqstats[INT])*2))
+							 if [[ "${enemy[5]}" = "Water" ]]; then
+                                                                 POW=$((POW*2))
+                                                                 echo "The enemy is weak!"
+                                                         fi
+                                                         enemy[0]=$((enemy[0]-POW))
+                                                         echo "The enemy is swallowed by crushing waves, dealing $((POW)) dmg"
+                                                         sleep 1
+                                                         resources[MAG]=$((resources[MAG]-5))
+                                                         activeSpellElement="Water"
+                                                         whom
+                                                         break;;
+						Blitz)
+                                                         if [[ "${resources[MAG]}" -le 5 ]]; then
+                                                                        echo "You're out of MAG!"
+                                                                        continue
+                                                         fi
+                                                         echo "The Black Red Sky cracks open with the roar of the gods"
+                                                         read -p "[y/n]" respmag
+                                                         if [[ "$respmag" != y ]]; then
+                                                                 continue
+                                                         fi
+							 POW=$(((stats[INT]+eqstats[INT])*2))
+                                                         if [[ "${enemy[5]}" = "Bolt" ]]; then
+                                                                 POW=$((POW*2))
+                                                                 echo "The enemy is weak!"
+                                                         fi
+                                                         enemy[0]=$((enemy[0]-POW))
+                                                         echo "The enemy is violently electrocuted, dealing $((POW)) dmg"
+                                                         sleep 1
+                                                         resources[MAG]=$((resources[MAG]-5))
+							 if [[ "$activeSpellElement" = "Water" ]]; then
+                                                                 enemy[0]=$((enemy[0]-POW/2))
+                                                                 echo "A concurrence occurs! Your waters and thunder combine to deal $((POW/2)) damage!"
+                                                                 whom
+                                                                 activeSpellElement="None"
+                                                                 break
+                                                         fi
+                                                         activeSpellElement="Bolt"
+                                                         whom
+                                                         break;;
+						Hurricane)
+                                                         if [[ "${resources[MAG]}" -le 5 ]]; then
+                                                                        echo "You're out of MAG!"
+                                                                        continue
+                                                         fi
+                                                         echo "Channel the imprgnable winds of the ancient dragons"
+                                                         read -p "[y/n]" respmag
+                                                         if [[ "$respmag" != y ]]; then
+                                                                 continue
+                                                         fi
+							 POW=$(((stats[INT]+eqstats[INT])*2))
+                                                         if [[ "${enemy[5]}" = "Wind" ]]; then
+                                                                 POW=$((POW*2))
+                                                                 echo "The enemy is weak!"
+                                                         fi
+                                                         enemy[0]=$((enemy[0]-POW))
+                                                         echo "The enemy is consumed in a wall of wind, dealing $((POW)) dmg"
+                                                         sleep 1
+                                                         resources[MAG]=$((resources[MAG]-5))
+                                                         activeSpellElement="Wind"
+                                                         whom
+                                                         break;;
+							
+					esac
+				done
+				break;;
+			Defend)
+				DEF=4
+				derived[STA]=$((derived[STA]+(stats[AGI]/2)))
+				if [[ "${derived[STA]}" -gt "${derived[MaxSTA]}" ]]; then
+					derived[STA]=${derived[MaxSTA]}
+				fi
+				break;;
+			Run)
+				DEF=3
+				runfactor=$((RANDOM % 6 + 1))
+				break;;
+			Item)
+				DEF=3
+				for eq in "${!inventory[@]}"
+                                                do
+                                                        echo "$eq : ${inventory[$eq]}"
+                                                done
+				PS3="Pick a Number: "
+				select item in ${inventoryNo[@]}
+				do
+					case $item in
+						Medicine)
+							echo "$item"
+							if [[ "${inventory[$item]}" < 1 ]]; then
+                                                		echo "You're out of this item! ${inventory[$item]}"
+                                                		continue
+	                                        	fi
+	                         	               	derived[HP]=$((derived[HP]+50))
+        	                                	if [[ ${derived[HP]} -gt ${derived[MaxHP]} ]]; then
+                	                                	derived[HP]=${derived[MaxHP]}
+                        	                	fi
+                                	        	echo "You spend Medicine and give yourself amateur firstaid. You gain 50 HP"
+                                        		inventory[Medicine]=$((inventory[Medicine]-1))
+							break;;
+						StaminaPill)
+							if [[ "${inventory[$item]}" < 1 ]]; then
+                                                		echo "You're out of this item! STAM"
+                                                		continue
+	                                        	fi
+	                         	               	derived[STA]=$((derived[STA]+50))
+        	                                	if [[ ${derived[STA]} -gt ${derived[MaxSTA]} ]]; then
+                	                                	derived[STA]=${derived[MaxSTA]}
+                        	                	fi
+							echo "You used a StaminaPill. You restored STA"
+                                        		inventory[$item]=$((inventory[$item]-1))
+							break;;
+						SenchaTea)
+							if [[ "${inventory[$item]}" < 1 ]]; then
+                                                                echo "You're out of this item! TEA"
+                                                                continue
+                                                        fi
+                                                        derived[STA]=$((derived[STA]+50))
+							derived[HP]=$((derived[HP]+50))
+                                                        if [[ ${derived[STA]} -gt ${derived[MaxSTA]} ]]; then
+                                                                derived[STA]=${derived[MaxSTA]}
+                                                        fi
+							if [[ ${derived[HP]} -gt ${derived[MaxHP]} ]]; then
+                                                                derived[HP]=${derived[MaxHP]}
+                                                        fi
+							inventory[$item]=$((inventory[$item]-1))
+                                                        echo "You used a Sencha Tea. You refilled HP and STA"
+							break;;
+						FiveFingerSeal)
+							 if [[ "${inventory[$item]}" < 1 ]]; then
+                                                                echo "You're out of this item! SEAL"
+                                                                continue
+                                                        fi
+							statusfx[sealed]=0
+                                                        echo "You used a Five Finger Seal. You cured seal."
+                                                        inventory[$item]=$((inventory[$item]-1))
+                                                        break;;
+						*)
+							echo "This item can't be used this way..."
+							continue;;
+					esac
+				done
+				break;;
+			Heal)
+				echo "entered heal"
+				DEF=3
+				ranny=$((RANDOM % 2 + 1))
+				ranny2=$((RANDOM % 15 + (stats[WIS]+eqstats[WIS])))
+				DocHeal=$(((stats[WIS]+eqstats[WIS]*ranny) + ranny2))
+				if [[ "$class" = Doctor ]]; then
+					select herb in GreenHerbs RedHerbs BlueHerbs
+					do
+						case $herb in
+							GreenHerbs)
+								if [[ "${inventory[GreenHerbs]}" < 1 ]]; then
+									echo "You're out of herbs!"
+									continue
+								fi
+								derived[HP]=$((derived[HP]+DocHeal))
+								if [[ ${derived[HP]} -gt ${derived[MaxHP]} ]]; then
+									derived[HP]=${derived[MaxHP]}
+								fi
+								echo "You spend Green Herbs recover ${DocHeal} HP with your expert healing technique"
+								inventory[GreenHerbs]=$((inventory[GreenHerbs]-1))
+								whom
+								break;;
+							RedHerbs)
+								if [[ "${inventory[RedHerbs]}" < 1 ]]; then
+									echo "You're out of herbs!"
+									continue
+								fi
+								derived[HP]=$((derived[HP]+DocHeal))
+								buffValue=$((stats[WIS]/2))
+								if [[ ${derived[HP]} -gt ${derived[MaxHP]} ]]; then
+									derived[HP]=${derived[MaxHP]}
+								fi
+								echo "You spend Red Herbs and recover ${DocHeal} HP with your expert healing technique. You're filled with roaring strength"
+								inventory[RedHerbs]=$((inventory[RedHerbs]-1))
+								whom
+								break;;
+							BlueHerbs)	
+                                                                if [[ "${inventory[BlueHerbs]}" < 1 ]]; then
+                                                                        echo "You're out of herbs!"
+                                                                        continue
+                                                                fi
+								derived[STA]=$((derived[STA]+(DocHeal/2)))
+                                                                if [[ ${derived[STA]} -gt ${derived[MaxSTA]} ]]; then
+                                                                        derived[STA]=${derived[MaxSTA]}
+                                                                fi
+								echo "You spend Blue Herbs and recover $((DocHeal/2)) STA with your expert healing technique."
+								echo "Your ailments seem to be allleviated."
+								statusfx[sealed]=0
+								statusfx[EnExhaust]=0
+								statusfx[toxin]=0
+                                                                inventory[BlueHerbs]=$((inventory[BlueHerbs]-1))
+                                                                whom
+                                                                break;;
+
+						esac
+					done
+				else
+				echo "You have no worthwhile medical skills..."
+				continue
+				fi
+				break;;
+			Technique)
+				if [[ "${statusfx[sealed]}" = 1 ]]; then
+					DEF=3
+					echo "Your techniques are sealed!"
+					continue
+				fi
+				PS3="Pick a number: "
+				if [[ "$class" = Ronin ]]; then
+					select attack in StrongStrike-15- Ichimonji-24- MoonSwallow-10- GambolShroud-35- 
+                                	do
+                                        	case $attack in
+							StrongStrike-15-)
+								if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+									techbreak=1
+									break
+                                                                fi
+                                                                derived[STA]=$((derived[STA]-15))
+								DEF=3
+								ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
+								POW=$(((stats[STR]+eqstats[STR])*2))
+								POWOW=$((POW+ranny))
+								enemy[HP]=$(((enemy[0]-(POWOW))))
+								echo "You spend your pent up energy and swing with gusto, dealing ${POW} damage"
+								echo "${enemy[0]}"
+								break;;
+							Ichimonji-24-)
+								if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+									techbreak=1
+									break
+                                                                fi
+                                                                derived[STA]=$((derived[STA]-24))
+								DEF=1
+                                                                ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
+                                                                POW=$(((stats[STR]+eqstats[STR])*3))
+                                                                POWOW=$((POW+ranny))
+                                                                enemy[HP]=$(((enemy[0]-(POWOW))))
+                                                                echo "Letting go of your guard, ignorant of all defense, you put yor very soul into one devastating swing, dealing ${POWOW} damage"
+                                                                echo "${enemy[0]}"
+                                                                break;;
+							MoonSwallow-10-)
+								if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+									techbreak=1
+									break
+                                                                fi
+                                                                derived[STA]=$((derived[STA]-10))
+								DEF=3
+								dazzleranny=$((RANDOM % 4 + 1))
+								if [[ "$dazzleranny" = 4 ]]; then
+									dazzle=1
+								fi
+                                                                ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
+                                                                POW=$(((stats[STR]+eqstats[STR])+ranny))
+                                                                enemy[HP]=$(((enemy[0]-(POW))))
+                                                                echo "Channeling the power of the moon you perform a dazzling strike, dealing ${POW} damage"
+                                                                echo "${enemy[0]}"
+                                                                break;;
+							GambolShroud-35-)
+								if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+									techbreak=1
+									break
+								else
+                                                                	derived[STA]=$((derived[STA]-35))
+									#
+									#add detriments to being out of breath
+									#add game over state
+									#1 town and one dungeon with three floors
+									#use select with an array for left and right turn choices
+									#
+									DEF=2
+									killranny=$((RANDOM % 16 + 1))
+									if [[ "${killranny}" = 16 ]]; then
+                                                                		echo "You strike at your opponents very soul, felling them in one strike"
+										enemy[HP]=0
+									else
+										echo "You're final technique misses, leaving you wide open"
+									fi
+                                                                	echo "${enemy[0]}"
+                                                                	break
+								fi;;
+                                        	esac
+                                	done
+				elif [[ "$class" = Shinobi ]]; then
+					select attack in StrongStrike-15- Acupunct-27- Tekkai-32- Rankyaku-22- Soru-45- Back
+					do
+						case $attack in
+							StrongStrike-15-)
+								if [[ "${derived[STA]}" -lt 0 ]]; then
+									echo "You're too out of breath to use this technique"
+									techbreak=1
+									break
+								fi
+								derived[STA]=$((derived[STA]-15))
+								DEF=3
+                                                                ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
+                                                                POW=$(((stats[STR]+eqstats[STR])*2))
+                                                                POWOW=$((POW+ranny))
+                                                                enemy[HP]=$(((enemy[0]-(POWOW))))
+                                                                echo "You spend your pent up energy and swing with gusto, dealing ${POW} damage"
+                                                                echo "${enemy[0]}"
+								break;;
+							Acupunct-27-)
+								if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+									techbreak=1
+									break
+                                                                fi
+								derived[STA]=$((derived[STA]-27))
+								DEF=3
+                                                                ranny=$((RANDOM % 15 + 8))
+                                                                POW=$(((stats[STR]+eqstats[STR])*1))
+                                                                POWOW=$((POW+ranny))
+                                                                enemy[HP]=$(((enemy[0]-(POWOW))))
+								acuranny=$((RANDOM % 6 + 1))
+                                                                if [[ "$acuranny" = 6 ]]; then
+                                                                        echo "You strike at your targets pressure points, leaving them paralyzed"
+									acu=1
+								else
+									echo "You strike at your targets pressure points, but fail to paralyze them"
+                                                                fi
+                                                                echo "${enemy[0]}"
+								break;;
+							Tekkai-32-)
+								if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+									techbreak=1
+									break
+                                                                fi
+								derived[STA]=$((derived[STA]-32))
+								DEF=5
+                                                                POW=$(((stats[AGI]+eqstats[AGI])*1))
+                                                                enemy[HP]=$(((enemy[0]-(POW))))
+                                                                echo "You harden the breath in your lungs, dealing a palm strike while holding your guard up"
+                                                                echo "${enemy[0]}"
+								break;;
+							Rankyaku-22-)
+								if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+									techbreak=1
+									break
+                                                                fi
+								derived[STA]=$((derived[STA]-22))
+								DEF=3
+                                                                ranny=$((RANDOM % 15 + 8))
+                                                                POW=$(((stats[AGI]+eqstats[AGI])*1))
+                                                                POWOW=$((POW+ranny))
+								if [[ "${enemy[5]}" = Wind ]]; then
+									enemy[HP]=$(((enemy[0]-(POWOW*2))))
+									echo "You deliver a powerful kick, kicking up a gust of wind weakness"
+								else
+									enemy[HP]=$(((enemy[0]-(POWOW))))
+									echo "No weakness"
+								fi
+                                                                echo "${enemy[0]}"
+                                                                break;;
+							Soru-45-)
+								if [[ "${derived[STA]}" -lt 45 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+                                                                        techbreak=1
+									break
+                                                                fi
+								derived[STA]=$((derived[STA]-45))
+								runfactor=6
+								echo "You vanish before your opponents eyes"
+								break;;
+							Back)
+								techbreak=1
+								break;;
+						esac
+					done
+				elif [[ "$class" = ${agech1} ]]; then
+					select attack in StrongStrike-15- RoyalVow-25- Scope-10- BloodOath-40-
+                                	do
+                                        	case $attack in
+                                                	StrongStrike-15-)
+                                                                if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+                                                                        techbreak=1
+                                                                        break
+                                                                fi
+                                                                derived[STA]=$((derived[STA]-15))
+                                                                DEF=3
+                                                                ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
+                                                                POW=$(((stats[STR]+eqstats[STR])*2))
+                                                                POWOW=$((POW+ranny))
+                                                                enemy[HP]=$(((enemy[0]-(POWOW))))
+                                                                echo "You spend your pent up energy and swing with gusto, dealing ${POW} damage"
+                                                                echo "${enemy[0]}"
+                                                                break;;
+							RoyalVow-25-)
+                                                                if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+                                                                        techbreak=1
+                                                                        break
+                                                                fi
+                                                                derived[STA]=$((derived[STA]-25))
+                                                                DEF=5
+								derived[HP]=$(((derived[HP]+(stats[GUI]*2))))
+								dazzleranny=$((RANDOM % 4 + 1))
+                                                                if [[ "$dazzleranny" = 4 ]]; then
+                                                                        dazzle=1
+                                                                fi
+								echo "You make an emboldened and entrancing claim, healing $((stats[GUI]*2)) "
+                                                                echo "${enemy[0]}"
+                                                                break;;
+							Scope-10-)
+                                                                if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+                                                                        techbreak=1
+                                                                        break
+                                                                fi
+                                                                derived[STA]=$((derived[STA]-10))
+                                                                DEF=3
+                                                                echo "You analyze your opponent thoroughly"
+								echo "Currently has ${enemy[0]} HP. A strength of ${enemy[1]} and a magical power of ${enemy[2]}. It is weak to ${enemy[5]} and can cast ${enemy[8]} number of spells."
+                                                                echo "${enemy[0]}"
+                                                                break;;
+							BloodOath-40-)
+                                                                if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+                                                                        techbreak=1
+                                                                        break
+                                                                elif [[ "$bloodvow" = 1 ]]; then
+									echo "BloodVow is already active"
+									techbreak=1
+									break
+								fi
+								bftime=0
+                                                                derived[STA]=$((derived[STA]-40))
+                                                                DEF=2
+								stats[STR]=$((stats[STR]+stats[GUI]))
+								bloodvow=1
+								echo "At the cost of life and defense. Boost your physical prowess to deadly levels"
+                                                                echo "${enemy[0]}"
+                                                                break;;
+                                        	esac
+                                	done
+				else
+					select attack in StrongStrike-15- Scope-10- 
+                                	do
+                                        	case $attack in
+                                                	StrongStrike-15-)
+                                                                if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+                                                                        techbreak=1
+                                                                        break
+                                                                fi
+                                                                derived[STA]=$((derived[STA]-15))
+                                                                DEF=3
+                                                                ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
+                                                                POW=$(((stats[STR]+eqstats[STR])*2))
+                                                                POWOW=$((POW+ranny))
+                                                                enemy[HP]=$(((enemy[0]-(POWOW))))
+                                                                echo "You spend your pent up energy and swing with gusto, dealing ${POW} damage"
+                                                                echo "${enemy[0]}"
+                                                                break;;
+							Scope-10-)
+                                                                if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+                                                                        techbreak=1
+                                                                        break
+                                                                fi
+                                                                derived[STA]=$((derived[STA]-10))
+                                                                DEF=3
+                                                                echo "You analyze your opponent thoroughly"
+								echo "Currently has ${enemy[0]} HP. A strength of ${enemy[1]} and a magical power of ${enemy[2]}. It is weak to ${enemy[5]} and can cast ${enemy[8]} number of spells."
+                                                                echo "${enemy[0]}"
+                                                                break;;
+						esac
+					done
+						
+				fi
+				if [[ "${techbreak}" = 1 ]]; then
+					techbreak=0
+					continue	
+				fi
+				break;;
+			NinjaTools)
+				if [[ "$class" != "Shinobi" ]]; then
+					echo "You must be a shinobi to use these objects"
+					continue
+				fi
+				DEF=3
+				for eq in "${!ninjaTools[@]}"
+                                                do
+                                                        echo "$eq : ${ninjaTools[$eq]}"
+                                                done
+				PS3="Pick a Number: "
+				select item in ${ninjaToolsNo[@]}
+				do
+					case $item in
+						Shuriken)
+							echo "$item"
+							if [[ "${ninjaTools[$item]}" < 1 ]]; then
+                                                		echo "You're out of this item! ${ninjaTools[$item]}"
+                                                		continue
+	                                        	fi
+							POW=$(((stats[AGI]+eqstats[AGI])*2))
+							enemy[HP]=$((enemy[0]-POW))
+							echo "You throw a ${item}, dealing $((stats[AGI]+eqstats[AGI])) damage."
+                                        		ninjaTools[$item]=$((ninjaTools[$item]-1))
+							break;;
+						PaperBomb)
+							echo "$item"
+                                                        if [[ "${ninjaTools[$item]}" < 1 ]]; then
+                                                                echo "You're out of this item! ${ninjaTools[$item]}"
+                                                                continue
+                                                        fi
+							if [[ "${enemy[5]}" == "Fire" ]]; then
+								weak=2
+							else
+								weak=1
+							fi
+							POW=$(((stats[AGI]+eqstats[AGI])*3*weak))
+                                                        enemy[HP]=$((enemy[0]-POW))
+							echo "You throw a ${item}, dealing $(((stats[AGI]+eqstats[AGI])*3*weak)) damage."
+                                                        ninjaTools[$item]=$((ninjaTools[$item]-1))
+                                                        break;;
+						FumaShuriken)
+                                                        echo "$item"
+                                                        if [[ "${ninjaTools[$item]}" < 1 ]]; then
+                                                                echo "You're out of this item! ${ninjaTools[$item]}"
+                                                                continue
+                                                        fi
+                                                        enemy[HP]=$(((enemy[0]-(stats[AGI]+eqstats[AGI]+stats[STR]+eqstats[STR]*2))))
+                                                        echo "You throw a ${item}, dealing $((stats[AGI]+eqstats[AGI]+stats[STR]+eqstats[STR]*2)) damage."
+                                                        ninjaTools[$item]=$((ninjaTools[$item]-1))
+                                                        break;;
+					esac
+				done
+				break;;
+		esac
+	done
+	if [[ "${derived[STA]}" -lt 0 ]]; then
+                echo "You're exhausted! Your guard weakens!"
+                if [[ $DEF -gt 2 ]]; then
+                        DEF=2
+                fi
+		exhaust=1
+		sleep 1
+	elif [[ "${derived[STA]}" -ge 0 ]]; then
+		exhaust=0
+        fi
+
+	if [[ ${enemy[HP]} -lt 1 ]]; then
+		if [[ "${bloodvow}" = 1 ]]; then
+			bloodvow=0
+			stats[STR]=$((stats[STR]-stats[GUI]))
+		fi
+		echo "${enemy[7]} has been defeated."
+		sleep 1
+		echo "You gained ${enemy[3]} yen and ${enemy[4]} experience."
+		sleep 1
+		give_exp "${enemy[4]}"
+		resources[GOLD]=$((${resources[GOLD]}+${enemy[3]}))
+		break
+	elif [[ "${runfactor}" = 6 ]]; then
+		if [[ "${bloodvow}" = 1 ]]; then
+                        bloodvow=0
+                        stats[STR]=$((stats[STR]-stats[GUI]))
+                fi
+		echo "You ran away"
+		runfactor=0
+		break
+	elif [[ "${runfactor}" -gt 0 ]]; then
+		echo "You failed to run away!"
+		runfactor=0
+	elif [[ "${acu}" = 1 ]]; then
+		time=$((time+1))
+		echo "The enemy is paralyzed!"
+		if [[ "${time}" -gt 1 ]]; then
+			if [[ $((RANDOM % 2 + 1)) = 2 ]]; then
+				acu=0
+				time=0
+				echo "The enemy has regained composure"
+			fi
+		fi
+		continue
+	elif [[ "${dazzle}" = 1 ]]; then
+		echo "The enemy was dazzled!"
+		dazzle=0
+		continue
+	fi
+
+	sleep 1
+	ranny=$((RANDOM % 2 + 1))
+	mranny=$((RANDOM % enemy[1] + 1))
+	if [[ "$chargevar" = 1 ]]; then
+		echo "power overwhelming"	
+		enemyPOW=$(((enemy[1]*4)/DEF))
+	else
+		enemyPOW=$(((enemy[1]*ranny)/DEF))
+		echo "times nuthin"
+	fi
+	enemyMAG=$(((enemy[2]+mranny)*ranny))
+	if [[ "${enemy[8]}" -gt 0 && "${chargevar}" = 0 ]]; then
+		echo "magentered ${chargevar}"
+		magchance=$((RANDOM % 4 + 1))
+		magchoice=$((RANDOM % ${enemy[8]} + 0 ))
+		magchoice=4
+		echo "chance: ${magchance} choice: ${magchoice}"
+		if [[ "$magchance" = 4 ]]; then
+			case $magchoice in
+				0)
+					echo "${enemy[7]} casts ${enemyMag[$magchoice]}"
+					derived[HP]=$((derived[HP]-(enemyMAG/DEF)))
+					echo "You burn and take $((enemyMAG/DEF)) damage";;
+				1)
+                                        echo "${enemy[7]} casts ${enemyMag[$magchoice]}"
+                                        derived[HP]=$((derived[HP]-(enemyPOW*2)))
+					echo "A wave of Force slams into your chest and you take $((enemyPOW*2)) damage";;
+				2)
+                                        echo "${enemy[7]} casts ${enemyMag[$magchoice]}"
+                                        enemy[1]=$((enemy[1]+5))
+                                        echo "It's power is growing even stronger!";;
+				3)
+                                        echo "${enemy[7]} casts ${enemyMag[$magchoice]}"
+                                        enemy[0]=$((enemy[0]+enemy[2]))
+                                        echo "The enemy recovers a portion of their health";;
+				4)
+                                        echo "${enemy[7]} casts ${enemyMag[$magchoice]}"
+					sealranny=$((RANDOM % 3 + 1))
+					if [[ "${sealranny}" = 3 ]]; then
+						statusfx[sealed]=1
+						echo "Your techniques have been sealed!"
+					fi;;
+				5)
+                                        echo "${enemy[7]} casts ${enemyMag[$magchoice]}"
+					derived[HP]=$((derived[HP]-(enemyMAG*3)))
+					grandranny=$((RANDOM % 4 + 1))
+                                        if [[ "${grandranny}" = 1 ]]; then
+                                                statusfx[sealed]=1
+						echo "You bear the brunt of a magical blast taking $((enemyMAG*3)) damage"
+						sleep 1
+						echo "Your techniques have been sealed!"
+					elif [[ "${grandranny}" = 2 ]]; then
+						statusfx[EnExhaust]=1
+						statusfx[sealed]=1
+						echo "You bear the brunt of a magical blast taking $((enemyMAG*3)) damage"
+						sleep 1
+						echo "You're exhausted! Your guard weakens!"
+						sleep 1
+						echo "Your techniques have been sealed!"
+					elif [[ "${grandranny}" = 3 ]]; then
+						statusfx[EnExhaust]=1
+						statusfx[sealed]=1
+						statusfx[toxin]=1
+						echo "You bear the brunt of a magical blast taking $((enemyMAG*3)) damage"
+						sleep 1
+						echo "You're exhausted! Your guard weakens!"
+						sleep 1
+						echo "Your techniques have been sealed!"
+					elif [[ "${grandranny}" = 4 ]]; then
+						echo "You bear the brunt of a magical blast taking $((enemyMAG*3)) damage"
+                                                sleep 1
+                                                derived[HP]=$((derived[HP]-(enemyMAG*2)))
+						echo "You're buffetted by a second flurry of magical explosions taking $((enemyMAG*2)) damage"
+					fi
+			esac
+		else
+			chargeranny=$((RANDOM % 6 + 1))
+			echo "charge chance is ${chargeranny}"
+			if [[ "$chargeranny" = 6 && "$chargevar" = 0 ]]; then
+				echo "The enemy is winding up a terrible attack..."
+				chargevar=1
+				continue
+			elif [[ "$DEF" -lt 4 ]]; then
+				echo "${enemy[6]} ${enemyPOW} damage"
+			else
+				echo "You glance off the attack and take ${enemyPOW} damage"
+			fi
+			derived[HP]=$((derived[HP]-enemyPOW))
+			if [[ "${chargevar}" = 1 ]]; then
+				chargevar=0
+			fi
+		fi
+		else
+			if [[ "$chargeranny" = 6 && "$chargevar" = 0 ]]; then
+                        	echo "The enemy is winding up a terrible attack..."
+                        	chargevar=1
+				continue
+			elif [[ "$DEF" -lt 4 ]]; then
+                        	echo "${enemy[6]} ${enemyPOW} damage"
+                	else
+                        	echo "You glance off the attack and take ${enemyPOW} damage"
+                	fi
+                	derived[HP]=$((derived[HP]-enemyPOW))
+			if [[ "${chargevar}" = 1 ]]; then
+                                chargevar=0
+                        fi
+	fi
+	if [[ "${derived[HP]}" -le 0 ]]; then
+		echo "diebuster"
+		die
+	fi
+	 echo "${enemy[0]}"
+done
+}
+
+die(){
+	sleep 2
+	echo "You died having achieved nothing."
+	sleep 1
+	echo "Your meagre grave less than a stepping stone for those that will come after."
+	sleep 2
+	echo "Your story muffled by the soft earth and your hollowed bones."
+	sleep 1
+	echo "Another lost soul cursed to haunt the pit forever."
+	sleep 1
+	echo "May you find your worth in the next world. "
+	sleep 2
+	exit 1
+}
+
+declare -a enemyMag=(
+[0]="Fireball"
+[1]="MagPunch"
+[2]="Enhancement"
+[3]="Regeneration"
+[4]="FourPillarSeal"
+[5]="GrandMagicBurst"
+)

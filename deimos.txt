@@ -1,0 +1,23 @@
+declare -a goblin=(
+[0]=35
+[1]=15
+[2]=5
+[3]=15
+[4]=100
+[5]="Fire"
+[6]="The Goblin slashes at you with its claws and you take"
+[7]="Goblin"
+[8]=0
+)
+
+declare -a oni=(
+[0]=125
+[1]=25
+[2]=3
+[3]=15
+[4]=100
+[5]="Wind"
+[6]="The Oni slams into your chest with a massive club and you take"
+[7]="Oni"
+[8]=6
+)

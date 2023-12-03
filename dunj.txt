@@ -1,0 +1,163 @@
+#!/bin/bash
+declare -a dungeon1=(█ 0 0 0 0 0 █ █ █ █ █  0 0 "T" 0 █ █ 0 0 0 0 0 0 █ █ █ 0 "T" 0 0 █ █ █ █ █ 0 0 █ █ █ )
+dungeon1start=18
+dungeon1stop=2
+dunj(){
+dungeonState=1
+#declare -a dungeon=(█ 0 0 0 0 0 █ █ █ █ █  0 0 "T" 0 █ █ 0 0 0 0 0 0 █ █ █ 0 "T" 0 0 █ █ █ █ █ 0 0 █ █ █ )
+local dungeon=("$@")
+treasureDrop(){
+	echo "u got treasure <3"
+}
+print_dunj(){
+	dungeon[$playerPos]="X"
+k=0
+for j in {1..5}
+do
+	for i in {1..8}
+	do
+		echo -n "${dungeon[k]}  "
+		k=$((k+1))
+	done
+	echo ""
+done
+}
+playerPos=$dungeon1start
+echo "playerpos is $playerPos"
+print_dunj
+right=0
+left=0
+up=0
+down=0
+declare -a movearr=()
+checkPos(){
+movearr=()
+if [[ "${dungeon[$playerPos+1]}" = 0 || "${dungeon[$playerPos+1]}" = "T" ]]; then
+	echo "Right?"
+	right=1
+	movearr+="Right "
+fi
+if [[ "${dungeon[$playerPos-1]}" = 0 || "${dungeon[$playerPos-1]}" = "T" ]]; then
+	left=1
+	movearr+="Left "
+fi
+if [[ "${dungeon[$playerPos-8]}" = 0 || "${dungeon[$playerPos-8]}" = "T" && "$((playerPos-7))" -gt 0 ]]; then
+	up=1
+	movearr+="Up "
+fi
+if [[ "${dungeon[$playerPos+8]}" = 0 || "${dungeon[$playerPos+8]}" = "T" ]]; then
+	down=1
+	movearr+="Down "
+fi
+}
+checkPos
+echo "${movearr[@]}"
+echo "${dungeon[$playerPos]}"
+echo "to left: ${dungeon[$playerPos-1]}"
+echo "to right: ${dungeon[$playerPos+1]}"
+dungeon[$playerPos]="X"
+print_dunj
+echo "right:${right} left:${left} up:${up} down:${down}"
+
+prinDoor(){
+	if [[ $left = 1 ]]; then
+	doorarr+="
+		 =-----------------=
+		  =------------------= 
+		   --------------------
+		    ----	     ----
+		     ----	       ---
+		      ----		---
+		       ----		 --"
+	fi
+	if [[ $up = 1 ]]; then
+	doorarr+="
+                      ---------------------
+                      ---------------------
+                      ---               ---
+                      ---               ---
+                      ---               ---
+                      ---               ---"
+        fi
+	if [[ $right = 1 ]]; then
+	doorarr+="
+                          ---------------------
+                        ---------------------
+                       ---               ---
+                      ---               ---
+                     ---               ---
+                    ---               ---"
+        fi
+	echo "${doorarr[@]}"
+	doorarr=()
+}
+PS3="Pick a direction: "
+while [[ $dungeonState = 1 ]]
+do
+	echo "relooped"
+	if [[ $playerPos = $dungeon1stop ]]; then
+		echo "dunj complete!"
+		break
+	fi
+	echo "pos is: $playerPos"
+	#prinDoor
+select move in ${movearr[@]}
+do
+	local rand=$((RANDOM % 3 + 1))
+	local entype=$((RANDOM % 2 + 1))
+	echo "chance is $rand, enemy is $entype"
+	if [[ $rand = 4 ]]; then
+		echo "You encounter an Enemy!"
+		sleep 1
+		case $entype in
+			1)
+				battle "${goblin[@]}";;
+			2)
+				battle "${oni[@]}";;
+		esac
+	fi
+	case $move in
+		Right)
+			playerPos=$((playerPos+1))
+			if [[  "${dungeon[$playerPos]}" = "T" ]]; then
+   				sleep 1
+        			treasureDrop
+			fi
+			dungeon[$playerPos-1]="0"
+			checkPos
+			print_dunj
+			break;;
+		Left)
+			playerPos=$((playerPos-1))
+			if [[  "${dungeon[$playerPos]}" = "T" ]]; then
+                                sleep 1
+                                treasureDrop
+                        fi
+                        dungeon[$playerPos+1]="0"
+                        checkPos
+                        print_dunj
+			break;;
+		Up)
+			playerPos=$((playerPos-8))
+			if [[  "${dungeon[$playerPos]}" = "T" ]]; then
+                                sleep 1
+                                treasureDrop
+                        fi
+                        dungeon[$playerPos+8]="0"
+                        checkPos
+                        print_dunj
+			break;;
+		Down)
+			playerPos=$((playerPos+8))
+			if [[  "${dungeon[$playerPos]}" = "T" ]]; then
+                                sleep 1
+                                treasureDrop
+                        fi
+                        dungeon[$playerPos-8]="0"
+                        checkPos
+                        print_dunj
+			break;;
+	esac
+done
+done
+}

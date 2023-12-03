@@ -1,0 +1,65 @@
+declare -a equipListHead=("WoolCap" "Turban" "Helmet")
+declare -a equipListBody=("Shirt" "LthrArmr")
+declare -a equipListWeapon=("ShortSword" "BloodiedDagger" "SpinningChakram")
+
+declare -A inventory=(
+["Medicine"]=5
+["StaminaPill"]=5
+["GreenHerbs"]=2
+["SenchaTea"]=5
+["FiveFingerSeal"]=5
+["RedHerbs"]=5
+["BlueHerbs"]=5
+)
+
+declare -a inventoryNo=(
+[0]="Medicine"
+[1]="StaminaPill"
+[2]="GreenHerbs"
+[3]="SenchaTea"
+[4]="FiveFingerSeal"
+[5]="RedHerbs"
+[6]="BlueHerbs"
+)
+
+declare -a ninjaToolsNo=(
+[0]="Shuriken"
+[1]="PaperBomb"
+[2]="FumaShuriken"
+)
+
+declare -A ninjaTools=(
+["Shuriken"]=5
+["PaperBomb"]=5
+["FumaShuriken"]=2
+)
+
+declare -A equipment=(
+["Turban"]=1
+["Shirt"]=1
+["ShortSword"]=1
+)
+
+declare -a equipmentNo=(
+[0]="Turban"
+[1]="Shirt"
+[2]="ShortSword"
+)
+
+declare -A smithy=(
+["Turban"]=65
+["WoolCap"]=50
+["GoldCrown"]=35
+["Exit"]=0
+)
+
+declare -A apothy=(
+["Medicine"]=10
+["StaminaPill"]=25
+["GreenHerbs"]=2
+["SenchaTea"]=5
+["FiveFingerSeal"]=5
+["RedHerbs"]=5
+["BlueHerbs"]=5
+["Exit"]=0
+)

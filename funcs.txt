@@ -14,9 +14,10 @@ done
 
 save(){
 echo "
-name=${name}
+name=(${name[@]})
 age=${age}
 class=${class}
+activeElement=${activeElement}
 declare -A stats=(
 ["STR"]=${stats[STR]}
 ["INT"]=${stats[INT]}
@@ -24,10 +25,14 @@ declare -A stats=(
 ["END"]=${stats[END]}
 ["GUI"]=${stats[GUI]}
 ["AGI"]=${stats[AGI]}
-["MaxHP"]=${stats[MaxHP]}
-["HP"]=${stats[HP]}
-["MaxSTA"]=${stats[MaxSTA]}
-["STA"]=${stats[STA]}
+)
+agech1=${agech1}
+
+declare -A derived=(
+["MaxHP"]=${derived[MaxHP]}
+["HP"]=${derived[HP]}
+["MaxSTA"]=${derived[MaxSTA]}
+["STA"]=${derived[STA]}
 )
 
 declare -A flags=(
@@ -38,10 +43,17 @@ declare -A flags=(
 )
 
 declare -A resources=(
-["LVL"]=1
-["EXP"]=0
-["NEXP"]=100
-["GOLD"]=0
+["LVL"]=${resources[LVL]}
+["EXP"]=${resources[EXP]}
+["NEXP"]=${resources[NEXP]}
+["GOLD"]=${resources[GOLD]}
+["MAG"]=${resources[MAG]}
+)
+
+declare -A statusfx=(
+["exhaust"]=0
+["sealed"]=0
+["toxin"]=0
 )
 
 declare -A eqstats=(
@@ -61,7 +73,7 @@ declare -A equip=(
 }
 
 whom(){
-        echo "Your name is ${name}. You are a ${age}-year old ${class} with ${stats[HP]} HP and ${stats[STA]} Stamina. "
+        echo "Your name is ${name[@]}. You are a ${age}-year old ${class} with ${derived[HP]} HP and ${derived[STA]} Stamina. Your Mag is ${resources[MAG]} "
 }
 
 equip_check () {
@@ -105,6 +117,27 @@ equip_check () {
                         ;;
 	esac
 
+	case ${equip[WEAPON]} in
+		ShortSword)
+			echo "${equip[WEAPON]} Equipped" 
+			eqstats[STR]=$((eqstats[STR]+3));;
+		BloodiedDagger)
+			echo "${equip[WEAPON]} Equipped"
+                        eqstats[STR]=$((eqstats[STR]+3))
+			eqstats[AGI]=$((eqstats[AGI]+3))
+			activeElement="Blood";;
+		SpinningChakram)
+		if [[ ${class} = "Shinobi" ]]; then
+			echo "${equip[WEAPON]} Equipped"
+                        eqstats[STR]=$((eqstats[STR]+3))
+                        eqstats[AGI]=$((eqstats[AGI]+3))
+                        activeElement="Wind"
+		else
+			echo "Can only be equipped by shinobi."
+		fi;;
+	esac
+	status_stats
+	status_equip
 }
 
 
