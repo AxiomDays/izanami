@@ -1,3 +1,17 @@
+#stats legend
+# 0:HP
+# 1:Phys.Atk
+# 2:Mag.Atk
+# 3:Gold
+# 4:Exp
+# 5:Weakness
+# 6:Atk.Desc
+# 7:Name
+# 8:Mag.Range
+# 9:Type (1 for phys, 2 for magic, 3 for boss)
+# 10: UniqueSKillName
+
+
 declare -a goblin=(
 [0]=35
 [1]=15
@@ -8,6 +22,8 @@ declare -a goblin=(
 [6]="The Goblin slashes at you with its claws and you take"
 [7]="Goblin"
 [8]=0
+[9]=1
+[10]="Goblin Punch"
 )
 
 declare -a oni=(
@@ -19,5 +35,35 @@ declare -a oni=(
 [5]="Wind"
 [6]="The Oni slams into your chest with a massive club and you take"
 [7]="Oni"
-[8]=6
+[8]=2
+[9]=1
+[10]="None"
+)
+
+declare -a ghost=(
+[0]=100
+[1]=15
+[2]=15
+[3]=15
+[4]=100
+[5]="Light"
+[6]="The spirit grasps you with its soul stealing hands and you take"
+[7]="Borei"
+[8]=3
+[9]=2
+[10]="None"
+)
+
+declare -a devourer=(
+[0]=1000
+[1]=40
+[2]=0
+[3]=15
+[4]=100
+[5]="Fire"
+[6]="The devourer attempts to swallow you whole! You take"
+[7]="Great Devourer"
+[8]=0
+[9]=1
+[10]="Devour"
 )

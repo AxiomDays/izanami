@@ -1,4 +1,4 @@
-declare -a townarr=("Palace" "Church" "Smithy" "Apothecary" "Demonitorium" "Dungeon" "Status")
+declare -a townarr=("Palace" "Church" "Smithy" "Apothecary" "Demonitorium" "Dungeon" "Talk" "Status")
 declare -A demon=(
 ["Exit"]=0
 ["Goblin"]=15
@@ -14,7 +14,7 @@ do
 	PS3="Pick a Number: "
 	case $place in
 		Status)
-			select choice in Stats Equipment Magic Exit
+			select choice in Stats Equipment Magic Save Exit
 			do
 				case $choice in
 					Stats)
@@ -44,6 +44,9 @@ do
 						done;;
 					Magic)
 						break 2;;
+					Save)
+						save
+						break 2;;
 					Exit)
 						break 2;;
 				esac
@@ -62,8 +65,53 @@ do
 		Demonitorium)
 			shop demon
 			break;;
+		Talk)
+			select person in Kobaneko Crowley Minamoto Izanagi FinalFloor Exit
+			do
+				case $person in
+					Kobaneko)
+						Kobaneko
+						break;;
+					Crowley)
+						Crowley
+						break;;
+					Minamoto)
+						Minamoto
+						break;;
+					FinalFloor)
+						FinalFloor
+						break;;
+					Izanagi)
+						Izanagi
+						break;;
+					Exit)
+						break;;
+				esac
+			done
+			break;;
 		Dungeon)
-			dunj ${dungeon1[@]}
+			echo "You are travelling to Dungeon Level ${dungLevel}"
+			travel 25
+			case $dungLevel in
+				1)
+					dunj ${dungeon1[@]};;
+				2)
+					dunj ${dungeon1[@]}
+					;;
+				3)
+					dunj ${dungeon1[@]}
+					;;
+				4)
+					dunj ${dungeon1[@]}
+					;;
+				5)
+					dunj ${dungeon1[@]}
+					;;
+				*)
+					dunj ${dungeon1[@]}
+					;;
+			esac
+			travel 25
 			break;;
 	esac
 done

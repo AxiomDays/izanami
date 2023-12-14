@@ -13,11 +13,26 @@ done
 }
 
 save(){
+
 echo "
 name=(${name[@]})
 age=${age}
 class=${class}
 activeElement=${activeElement}
+dungLevel=${dungLevel}
+declare -a kobanekoActiveList=(${kobanekoActiveList[@]@Q})
+crowleyActiveList=(${crowleyActiveList[@]@Q})
+declare -A dialogueChecks=(
+["dungLevelCrowleycheck"]=${dialogueChecks[dungLevelCrowleycheck]}
+["dungLevelKobancheck"]=${dialogueChecks[dungLevelKobancheck]}
+["kobamaoucheck"]=${dialogueChecks[kobamaoucheck]}
+["kobanBreak"]=${dialogueChecks[kobanBreak]}
+["kobasubjcheck"]=${dialogueChecks[kobasubjcheck]}
+["kobaguidecheck"]=${dialogueChecks[kobaguidecheck]}
+["endCrowCheck"]=${dialogueChecks[endCrowCheck]}
+["endKobanCheck"]=${dialogueChecks[endKobanCheck]}
+["endWhiteCheck"]=${dialogueChecks[endWhiteCheck]}
+)
 declare -A stats=(
 ["STR"]=${stats[STR]}
 ["INT"]=${stats[INT]}

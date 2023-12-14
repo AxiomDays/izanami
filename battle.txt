@@ -1,4 +1,4 @@
-declare -a playerMagArr=("Scathe" "Flood" "Blitz" "Hurricane")
+declare -a playerMagArr=("Scathe" "Flood" "Blitz" "Hurricane" "Exit")
 battle (){
 turncount=0
 time=0
@@ -6,11 +6,7 @@ chargevar=0
 buffValue=0
 activeSpellElement="None"
 local enemy=("$@")
-for eq in "${!enemy[@]}"
-do
-        echo "$eq : ${enemy[$eq]}"
-done
- echo "Fight Started"
+echo "You encountered ${enemy[7]}"
 while [[ "${enemy[0]}" > 0 ]];
 do
 	derived[STA]=$((derived[STA]+(stats[AGI]/2)))
@@ -82,7 +78,7 @@ do
                                                                         echo "You're out of MAG!"
                                                                         continue
                                                          fi
-							 echo "The Hellish flames of Sage Veneer that burn eternally"
+							 echo "The Hellish flames of Sage Veneer that burn eternally (MAG COST: 5)"
 							 read -p "[y/n]" respmag
 							 if [[ "$respmag" != y ]]; then
 								 continue
@@ -111,7 +107,7 @@ do
                                                                         echo "You're out of MAG!"
                                                                         continue
                                                          fi
-                                                         echo "Channel the crushing weight of Great Serpent's Seas"
+                                                         echo "Channel the crushing weight of Great Serpent's Seas (MAG COST: 5)"
                                                          read -p "[y/n]" respmag
                                                          if [[ "$respmag" != y ]]; then
                                                                  continue
@@ -133,7 +129,7 @@ do
                                                                         echo "You're out of MAG!"
                                                                         continue
                                                          fi
-                                                         echo "The Black Red Sky cracks open with the roar of the gods"
+                                                         echo "The Black Red Sky cracks open with the roar of the gods (MAG COST: 5)"
                                                          read -p "[y/n]" respmag
                                                          if [[ "$respmag" != y ]]; then
                                                                  continue
@@ -162,7 +158,7 @@ do
                                                                         echo "You're out of MAG!"
                                                                         continue
                                                          fi
-                                                         echo "Channel the imprgnable winds of the ancient dragons"
+                                                         echo "Channel the imprgnable winds of the ancient dragons (MAG COST: 5)"
                                                          read -p "[y/n]" respmag
                                                          if [[ "$respmag" != y ]]; then
                                                                  continue
@@ -179,9 +175,15 @@ do
                                                          activeSpellElement="Wind"
                                                          whom
                                                          break;;
-							
+						Exit)
+                                                                techbreak=1
+                                                                break;;	
 					esac
 				done
+				if [[ "${techbreak}" = 1 ]]; then
+                                        techbreak=0
+                                        continue
+                                fi
 				break;;
 			Defend)
 				DEF=4
@@ -373,7 +375,7 @@ do
 								DEF=3
 								dazzleranny=$((RANDOM % 4 + 1))
 								if [[ "$dazzleranny" = 4 ]]; then
-									dazzle=1
+									local dazzle=1
 								fi
                                                                 ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
                                                                 POW=$(((stats[STR]+eqstats[STR])+ranny))
@@ -441,7 +443,7 @@ do
 								acuranny=$((RANDOM % 6 + 1))
                                                                 if [[ "$acuranny" = 6 ]]; then
                                                                         echo "You strike at your targets pressure points, leaving them paralyzed"
-									acu=1
+									local acu=1
 								else
 									echo "You strike at your targets pressure points, but fail to paralyze them"
                                                                 fi
@@ -660,8 +662,8 @@ do
 	done
 	if [[ "${derived[STA]}" -lt 0 ]]; then
                 echo "You're exhausted! Your guard weakens!"
-                if [[ $DEF -gt 2 ]]; then
-                        DEF=2
+                if [[ $DEF -gt 1 ]]; then
+                        DEF=1
                 fi
 		exhaust=1
 		sleep 1

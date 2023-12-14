@@ -1,5 +1,15 @@
 #!/bin/bash
-declare -a dungeon1=(█ 0 0 0 0 0 █ █ █ █ █  0 0 "T" 0 █ █ 0 0 0 0 0 0 █ █ █ 0 "T" 0 0 █ █ █ █ █ 0 0 █ █ █ )
+#declare -a dungeon1=(	█ 0 0 0 0 0 █ █ 
+#			█ █ █ 0 0 T 0 █ 
+#			█ 0 0 0 0 0 0 █ 
+#			█ █ 0 T 0 0 █ █ 
+#			█ █ █ 0 0 █ █ █ )
+
+declare -a dungeon1=(   █ "-" "-" "-" "-" "-" █ █
+                        █ █ █ "-" "-" T "-" █
+                        █ "-" "-" "-" "-" "-" "-" █
+                        █ █ "-" T "-" "-" █ █
+                        █ █ █ "-" "-" █ █ █ )
 dungeon1start=18
 dungeon1stop=2
 dunj(){
@@ -32,20 +42,20 @@ down=0
 declare -a movearr=()
 checkPos(){
 movearr=()
-if [[ "${dungeon[$playerPos+1]}" = 0 || "${dungeon[$playerPos+1]}" = "T" ]]; then
+if [[ "${dungeon[$playerPos+1]}" = "-" || "${dungeon[$playerPos+1]}" = "T" ]]; then
 	echo "Right?"
 	right=1
 	movearr+="Right "
 fi
-if [[ "${dungeon[$playerPos-1]}" = 0 || "${dungeon[$playerPos-1]}" = "T" ]]; then
+if [[ "${dungeon[$playerPos-1]}" = "-" || "${dungeon[$playerPos-1]}" = "T" ]]; then
 	left=1
 	movearr+="Left "
 fi
-if [[ "${dungeon[$playerPos-8]}" = 0 || "${dungeon[$playerPos-8]}" = "T" && "$((playerPos-7))" -gt 0 ]]; then
+if [[ "${dungeon[$playerPos-8]}" = "-" || "${dungeon[$playerPos-8]}" = "T" && "$((playerPos-7))" -gt 0 ]]; then
 	up=1
 	movearr+="Up "
 fi
-if [[ "${dungeon[$playerPos+8]}" = 0 || "${dungeon[$playerPos+8]}" = "T" ]]; then
+if [[ "${dungeon[$playerPos+8]}" = "-" || "${dungeon[$playerPos+8]}" = "T" ]]; then
 	down=1
 	movearr+="Down "
 fi
@@ -96,7 +106,10 @@ while [[ $dungeonState = 1 ]]
 do
 	echo "relooped"
 	if [[ $playerPos = $dungeon1stop ]]; then
-		echo "dunj complete!"
+		echo "You unlock the next level and turn back to town!"
+		if [[ $dungLevel < 5 ]]; then
+		dungLevel=$((dungLevel+1))
+		fi
 		break
 	fi
 	echo "pos is: $playerPos"
@@ -106,7 +119,7 @@ do
 	local rand=$((RANDOM % 3 + 1))
 	local entype=$((RANDOM % 2 + 1))
 	echo "chance is $rand, enemy is $entype"
-	if [[ $rand = 4 ]]; then
+	if [[ $rand = 3 ]]; then
 		echo "You encounter an Enemy!"
 		sleep 1
 		case $entype in
@@ -123,7 +136,7 @@ do
    				sleep 1
         			treasureDrop
 			fi
-			dungeon[$playerPos-1]="0"
+			dungeon[$playerPos-1]="-"
 			checkPos
 			print_dunj
 			break;;
@@ -133,7 +146,7 @@ do
                                 sleep 1
                                 treasureDrop
                         fi
-                        dungeon[$playerPos+1]="0"
+                        dungeon[$playerPos+1]="-"
                         checkPos
                         print_dunj
 			break;;
@@ -143,7 +156,7 @@ do
                                 sleep 1
                                 treasureDrop
                         fi
-                        dungeon[$playerPos+8]="0"
+                        dungeon[$playerPos+8]="-"
                         checkPos
                         print_dunj
 			break;;
@@ -153,7 +166,7 @@ do
                                 sleep 1
                                 treasureDrop
                         fi
-                        dungeon[$playerPos-8]="0"
+                        dungeon[$playerPos-8]="-"
                         checkPos
                         print_dunj
 			break;;

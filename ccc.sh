@@ -6,6 +6,8 @@ source stats.txt
 source battle.txt
 source dunj.txt
 source deimos.txt
+source chartalk.sh
+source fasttravel.sh
 
 declare -A stats=(
 ["STR"]=5
@@ -176,29 +178,25 @@ derived[MaxHP]=$(((SUM_HP1*10)+(SUM_HP2*3)+(LVL*15)))
 derived[HP]=${derived[MaxHP]}
 derived[MaxSTA]=$(((stats[AGI]+stats[END]+eqstats[AGI]+eqstats[END])*3))
 derived[STA]=${derived[MaxSTA]}
+dungLevel=1
 
 echo "These are your parameters"
 for stat in "${!stats[@]}"
 do
 	echo "$stat : ${stats[$stat]} + ${eqstats[$stat]}"
 done
-sleep 1
-echo "Your name is ${name[@]}. You are a ${age}-year old ${class} with ${derived[MaxHP]} HP and ${derived[MaxSTA]} Stamina. "
-for eq in "${!equip[@]}"
-do
-	echo "$eq : ${equip[$eq]}"
-done
 flags[saveflag]=1
 flags[loadflag]=1
 save
 fi
-status_stats
-status_equip
 whom
-echo "This is the beginning"
-add_item Elixir
-add_equipment BloodiedDagger
 sleep 1
+if [[ "${flags[loadflag]}" < 2 ]]; then
+OneHornedLady
+Kobaneko
+flags[saveflag]=1
+flags[loadflag]=2
+save
+fi
 town 
-battle "${oni[@]}"
-
+echo "Town function Was Broken out of; Critical Error :skull_emoji:"
