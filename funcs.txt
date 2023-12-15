@@ -20,8 +20,10 @@ age=${age}
 class=${class}
 activeElement=${activeElement}
 dungLevel=${dungLevel}
+diedYet=${diedYet}
 declare -a kobanekoActiveList=(${kobanekoActiveList[@]@Q})
 crowleyActiveList=(${crowleyActiveList[@]@Q})
+talkarr=(${talkarr[@]@Q})
 declare -A dialogueChecks=(
 ["dungLevelCrowleycheck"]=${dialogueChecks[dungLevelCrowleycheck]}
 ["dungLevelKobancheck"]=${dialogueChecks[dungLevelKobancheck]}
@@ -33,6 +35,9 @@ declare -A dialogueChecks=(
 ["endKobanCheck"]=${dialogueChecks[endKobanCheck]}
 ["endWhiteCheck"]=${dialogueChecks[endWhiteCheck]}
 )
+
+equipmentNo=(${equipmentNo[@]})
+
 declare -A stats=(
 ["STR"]=${stats[STR]}
 ["INT"]=${stats[INT]}
@@ -84,6 +89,23 @@ declare -A equip=(
 ["BODY"]=${equip[BODY]}
 ["WEAPON"]=${equip[WEAPON]}
 )
+
+declare -A inventory=(
+["Medicine"]=${inventory[Medicine]}
+["Tonic"]=${inventory[Tonic]}
+["StaminaPill"]=${inventory[StaminaPill]}
+["SenchaTea"]=${inventory[SenchaTea]}
+["FiveFingerSeal"]=${inventory[FiveFingerSeal]}
+["Antidote"]=${inventory[Antidote]}
+["EnergyCandy"]=${inventory[EnergyCandy]}
+["Panacea"]=${inventory[Panacea]}
+["GreenHerbs"]=${inventory[GreenHerbs]}
+["RedHerbs"]=${inventory[RedHerbs]}
+["BlueHerbs"]=${inventory[BlueHerbs]}
+["KobanCoin"]=${inventory[KobanCoin]}
+)
+
+
 " > save.conf
 }
 
@@ -118,6 +140,11 @@ equip_check () {
 			eqstats[INT]=$((eqstats[END]+4))
                         eqstats[WIS]=$((eqstats[WIS]+2))
                         ;;
+		DemonHorn)
+			echo "${equip[HEAD]} Equipped"
+                        eqstats[END]=$((eqstats[END]+5))
+                        eqstats[STR]=$((eqstats[STR]+8))
+                        ;;
 	esac
 
 	case ${equip[BODY]} in
@@ -130,6 +157,18 @@ equip_check () {
                         eqstats[END]=$((eqstats[END]+7))
 			eqstats[AGI]=$((eqstats[AGI]-3))
                         ;;
+		TurtleShell)
+			echo "${equip[BODY]} Equipped"
+                        eqstats[END]=$((eqstats[END]+10));;
+		 NinjaArmor)
+                        echo "${equip[BODY]} Equipped"
+                        eqstats[END]=$((eqstats[END]+6))
+                        eqstats[AGI]=$((eqstats[AGI]+4));;
+		DevourerChitin)
+			echo "${equip[BODY]} Equipped"
+                        eqstats[END]=$((eqstats[END]+10))
+                        eqstats[AGI]=$((eqstats[STR]+5))
+                        ;;
 	esac
 
 	case ${equip[WEAPON]} in
@@ -140,7 +179,7 @@ equip_check () {
 			echo "${equip[WEAPON]} Equipped"
                         eqstats[STR]=$((eqstats[STR]+3))
 			eqstats[AGI]=$((eqstats[AGI]+3))
-			activeElement="Blood";;
+			activeElement="Earth";;
 		SpinningChakram)
 		if [[ ${class} = "Shinobi" ]]; then
 			echo "${equip[WEAPON]} Equipped"
@@ -150,9 +189,26 @@ equip_check () {
 		else
 			echo "Can only be equipped by shinobi."
 		fi;;
+		BloodSword)
+			echo "${equip[WEAPON]} Equipped"
+                        eqstats[STR]=$((eqstats[STR]+5));;
+		GigantEdge)
+			echo "${equip[WEAPON]} Equipped"
+                        eqstats[STR]=$((eqstats[STR]+7));;
+		NinjaSword)
+                        echo "${equip[WEAPON]} Equipped"
+                        eqstats[STR]=$((eqstats[STR]+5))
+			eqstats[AGI]=$((eqstats[AGI]+4));;
+		IceBrand)
+			echo "${equip[WEAPON]} Equipped"
+                        eqstats[STR]=$((eqstats[STR]+7))
+                        activeElement="Water";;
+		Excalihuh?)
+			echo "${equip[WEAPON]} Equipped"
+			eqstats[END]=$((eqstats[END]+5))
+                        eqstats[STR]=$((eqstats[STR]+5))
+                        eqstats[AGI]=$((eqstats[AGI]+5));;
 	esac
-	status_stats
-	status_equip
 }
 
 

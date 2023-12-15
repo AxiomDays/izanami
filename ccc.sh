@@ -3,7 +3,7 @@ source funcs.txt
 source inv.txt
 source town.sh
 source stats.txt
-source battle.txt
+source battle.sh
 source dunj.txt
 source deimos.txt
 source chartalk.sh
@@ -66,29 +66,26 @@ if [[ -f "save.conf" ]]; then
 fi
 	
 if [[ "${flags[loadflag]}" < 1 ]]; then
-echo "The hunt for the nameless blade is upon us."
-sleep 1 
-echo "Like a star fallen from the sky, hundreds of the greatest warriors, tacticians and world-shapers the province has ever seen are after this legendary weapon that seemed to have been sent by the gods themselves."
-sleep 1
-echo "Hidden deep in the center of Izanami's Forest, do you have the strength to obtain the greatest treasure? Or will you fall like the others that came before?"
-sleep 1
-echo "What do they call you: "
+Tutorial
+echo "---------------------------------------------------------------"
+read -p "The hunt for the nameless blade is upon us." 
+read -p "Like a star fallen from the sky, hundreds of the greatest warriors, tacticians and world-shapers the province has ever seen are after this legendary weapon that seemed to have been sent by the gods themselves."
+read -p "Hidden deep in the center of Izanami's Forest, do you have the strength to obtain the greatest treasure? Or will you fall like the others that came before?"
+echo "What do they call you (input your name): "
 read -a name
-read -p "How long have you been on this earth: " age
+read -p "How old are you (input your age): " age
 if [[ "$age" > 40 ]]; then
-	echo "With great years comes great wisdom, you will be blessed with guile but inferior in strength"
-	stats[INT]=$((stats[INT]+5))
-	stats[WIS]=$((stats[WIS]+5))
+	read -p "With great years comes great wisdom, you will be blessed with guile but inferior in strength"
+	stats[INT]=$((stats[INT]+3))
+	stats[WIS]=$((stats[WIS]+3))
 	agech1="Royal"
 	agech2="Born to unimaginable wealth yet no throne to show for it, your bloodgiven seat forever filled by the oafish lot that is your king. You seek retribution, you seek your birthright, all that lies within. And you have the resources to get it."
-	sleep 2
 else
-	echo "With youth comes great vigor, you are foolhardy but your power can only keep growing"
-	stats[STR]=$((stats[STR]+5))
-	stats[END]=$((stats[END]+5))
+	read -p "With youth comes great vigor, you are foolhardy but your power can only keep growing"
+	stats[STR]=$((stats[STR]+3))
+	stats[END]=$((stats[END]+3))
 	agech1="Scion"
 	agech2="Born to unimaginable wealth and unbearable responsiblity, the royal tutors made sure you grew up well learned in arts of hand and war but you still lack much in foresight."
-	sleep 2
 fi
 echo "Before finding yourself wound up in such an untenable quest, what work did your hands find themselves in"
 PS3="Pick a number: "
@@ -185,9 +182,11 @@ for stat in "${!stats[@]}"
 do
 	echo "$stat : ${stats[$stat]} + ${eqstats[$stat]}"
 done
+echo ""
 flags[saveflag]=1
 flags[loadflag]=1
 save
+Fall
 fi
 whom
 sleep 1

@@ -1,25 +1,33 @@
-declare -a equipListHead=("WoolCap" "Turban" "Helmet")
-declare -a equipListBody=("Shirt" "LthrArmr")
-declare -a equipListWeapon=("ShortSword" "BloodiedDagger" "SpinningChakram")
+declare -a equipListHead=("WoolCap" "Turban" "Helmet" "WitchHat" "DemonHorn")
+declare -a equipListBody=("Shirt" "Lthr.Armor" "TurtleShell" "NinjaArmor" "DevourerChitin" )
+declare -a equipListWeapon=("ShortSword" "BloodiedDagger" "SpinningChakram" "IceBrand" "BloodSword" "GigantEdge" "NinjaSword" "Excalihuh?")
 
 declare -A inventory=(
 ["Medicine"]=5
+["Tonic"]=2
 ["StaminaPill"]=5
+["SenchaTea"]=0
+["FiveFingerSeal"]=2
+["Antidote"]=0
+["EnergyCandy"]=0
+["Panacea"]=0
 ["GreenHerbs"]=2
-["SenchaTea"]=5
-["FiveFingerSeal"]=5
-["RedHerbs"]=5
-["BlueHerbs"]=5
+["RedHerbs"]=2
+["BlueHerbs"]=2
 )
 
 declare -a inventoryNo=(
 [0]="Medicine"
-[1]="StaminaPill"
-[2]="GreenHerbs"
+[1]="Tonic"
+[2]="StaminaPill"
 [3]="SenchaTea"
 [4]="FiveFingerSeal"
-[5]="RedHerbs"
-[6]="BlueHerbs"
+[5]="Antidote"
+[6]="EnergyCandy"
+[7]="Panacea"
+[8]="GreenHerbs"
+[9]="RedHerbs"
+[10]="BlueHerbs"
 )
 
 declare -a ninjaToolsNo=(
@@ -29,9 +37,9 @@ declare -a ninjaToolsNo=(
 )
 
 declare -A ninjaTools=(
-["Shuriken"]=5
-["PaperBomb"]=5
-["FumaShuriken"]=2
+["Shuriken"]=3
+["PaperBomb"]=3
+["FumaShuriken"]=3
 )
 
 declare -A equipment=(
@@ -50,16 +58,22 @@ declare -A smithy=(
 ["Turban"]=65
 ["WoolCap"]=50
 ["GoldCrown"]=35
+["BloodiedDagger"]=100
+["Lthr.Armor"]=125
 ["Exit"]=0
 )
 
 declare -A apothy=(
-["Medicine"]=10
-["StaminaPill"]=25
-["GreenHerbs"]=2
-["SenchaTea"]=5
-["FiveFingerSeal"]=5
-["RedHerbs"]=5
-["BlueHerbs"]=5
+["Medicine"]=25
+["Tonic"]=65
+["StaminaPill"]=50
+["SenchaTea"]=100
+["FiveFingerSeal"]=75
+["Antidote"]=75
+["EnergyCandy"]=75
+["Panacea"]=1000
+["GreenHerbs"]=50
+["RedHerbs"]=50
+["BlueHerbs"]=50
 ["Exit"]=0
 )

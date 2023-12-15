@@ -1,4 +1,5 @@
 declare -a townarr=("Palace" "Church" "Smithy" "Apothecary" "Demonitorium" "Dungeon" "Talk" "Status")
+declare -a talkarr=("Kobaneko" "Crowley" "Izanagi" "FinalFloor" "Exit")
 declare -A demon=(
 ["Exit"]=0
 ["Goblin"]=15
@@ -9,6 +10,9 @@ townstate=1
 echo "Where do you want to go"
 while [[ "$townstate" = 1 ]]
 do
+ninjaTools["Shuriken"]=3
+ninjaTools["PaperBomb"]=3
+ninjaTools["FumaShuriken"]=3
 select place in ${townarr[@]}
 do
 	PS3="Pick a Number: "
@@ -42,8 +46,6 @@ do
 							esac
 						done
 						done;;
-					Magic)
-						break 2;;
 					Save)
 						save
 						break 2;;
@@ -66,17 +68,14 @@ do
 			shop demon
 			break;;
 		Talk)
-			select person in Kobaneko Crowley Minamoto Izanagi FinalFloor Exit
+			select person in "${talkarr[@]}"
 			do
 				case $person in
 					Kobaneko)
 						Kobaneko
 						break;;
-					Crowley)
-						Crowley
-						break;;
-					Minamoto)
-						Minamoto
+					White)
+						White
 						break;;
 					FinalFloor)
 						FinalFloor
@@ -94,21 +93,24 @@ do
 			travel 25
 			case $dungLevel in
 				1)
-					dunj ${dungeon1[@]};;
-				2)
 					dunj ${dungeon1[@]}
+					;;
+				2)
+					dunj ${dungeon2[@]}
 					;;
 				3)
-					dunj ${dungeon1[@]}
+					dunj ${dungeon3[@]}
 					;;
 				4)
-					dunj ${dungeon1[@]}
+					dunj ${dungeon4[@]}
+					battle "${gigas[@]}"
 					;;
 				5)
-					dunj ${dungeon1[@]}
+					dunj ${dungeon5[@]}
+					FinalFloor
 					;;
 				*)
-					dunj ${dungeon1[@]}
+					dunj ${dungeon5[@]}
 					;;
 			esac
 			travel 25
@@ -122,7 +124,7 @@ shop(){
 shopstate=1
 if [[ "$1" = smith ]]; then
 echo "A wave of heat rolls over you as soon as you step in."
-echo "What would yer like to purchase, adventurer!"
+char "Old Smithy" "What would yer like to purchase, adventurer!"
 PS3="Pick a Number: "
 while [[ "$shopstate" = 1 ]]
 do
@@ -147,7 +149,7 @@ select smit in ${!smithy[@]}
 					fi	
 					break
 				else
-					echo "Broke ass"
+					echo "You don't have enough Yen"
 					break
 				fi
 			else
@@ -158,8 +160,8 @@ done
 done
 elif [[ "$1" = "church" ]]; then
 	echo "The soft scent of incense attacks you. There's a quiet hymn everberating from unknown places."
-	echo "Come my child, be healed"
-	echo "That will be $((resources[LVL]*25)) yen"
+	char "Sister Amaka" "Come my child, be healed"
+	char "Sister Amaka" "That will be $((resources[LVL]*25)) yen"
         read -p "[y/n]: " reply
 	while [[ "$shopstate" = 1 ]]
 	do
@@ -172,16 +174,16 @@ elif [[ "$1" = "church" ]]; then
 						Healing)
 							derived[HP]=${derived[MaxHP]}
 							derived[STA]=${derived[MaxSTA]}
-							echo "You have been healed. Go now and sin no more"
+							 char "Sister Amaka" "You have been healed. Go now and sin no more"
 							break;;
 						Purge)
 							statusfx[sealed]=0
 			                                statusfx[EnExhaust]=0
 			                                statusfx[toxin]=0
-							echo "You have been delivered from ailment. Go now and be free."
+							 char "Sister Amaka" "You have been delivered from ailment. Go now and be free."
 							break;;
 						Blessing)
-							echo "Our lord has granted you a boon"
+							 char "Sister Amaka" "Our lord has granted you a boon"
 							break;;
 						Exit)
 							shopstate=0
@@ -189,7 +191,7 @@ elif [[ "$1" = "church" ]]; then
 					esac
 				done
 			else
-				echo "broke ass"
+				echo "You don't have enough Yen"
 				break
 			fi
 		else
@@ -198,7 +200,7 @@ elif [[ "$1" = "church" ]]; then
 	done
 	elif [[ "$1" = "apothecary" ]]; then
 		echo "An indescribable miasma rises out as you open the door, the smell of ginseng, rabbit foot and other unknowable reagents"
-		echo "What would you like to purchase, adventurer!"
+		char "Lenarr, the Alchemist" "What would you like to purchase, adventurer!"
 		PS3="Pick a Number: "
 		while [[ "$shopstate" = 1 ]]
 		do
@@ -210,7 +212,7 @@ elif [[ "$1" = "church" ]]; then
 					shopstate=0
 					break;;
 				*)
-					echo "That will be ${apothy[$smit]} yen"
+					char "Lenarr, the Alchemist" "That will be ${apothy[$smit]} yen"
 					read -p "[y/n]: " reply
 					if [[ "$reply" = y || "$reply" = Y ]]; then
 						if [[ "${resources[GOLD]}" -ge "${apothy[$smit]}" ]]; then
@@ -218,7 +220,7 @@ elif [[ "$1" = "church" ]]; then
 							resources[GOLD]=$((resources[GOLD]-apothy[$smit]))
 							break
 						else
-							echo "Broke ass"
+							echo "You don't have enough Yen"
 							break
 						fi
 					else
@@ -228,17 +230,17 @@ elif [[ "$1" = "church" ]]; then
 	        done
 		done
 	elif [[ "$1" = "demon" ]]; then
-                echo "Unholy sigils paint the walls and howling creatures cackle from cages hanging precariously overheadabove"
-                echo "Test your skills, adventurer... Anything you carve out is yours."
+                echo "Unholy sigils paint the walls and howling creatures cackle from cages hanging precariously overhead"
+                char "Crowley" "Test your skills, adventurer... Anything you carve out is yours."
                 PS3="Pick a Number: "
                 while [[ "$shopstate" = 1 ]]
                 do
 		echo "Whatever you want, I got it."
-		select opt in Buy_Mag See_Demons
+		select opt in "Buy Mag"	"See Demons" "Talk to Crowley"
 		do
 			case $opt in
-				Buy_Mag)
-					read -p "How much do you want to buy: [number]" number
+				"Buy Mag")
+					read -p "How much do you want to buy: [number] " number
 					while [[ ! "$number" =~ ^[0-9]+$ ]];
 					do    
 						read -p "Reenter the number: " number
@@ -250,16 +252,20 @@ elif [[ "$1" = "church" ]]; then
 							 resources[GOLD]=$((resources[GOLD]-cost))
 							 resources[MAG]=$((resources[MAG]+number))
 						 else
-							 echo "broke ass"
+							 echo "You don't have enough Yen"
 							 continue
 						 fi
 					else
-						echo "No? fr?"
+						echo "What else would you like to purchase"
 						break
 					fi
 					shopstate=0
 					break;;
-				See_Demons)
+				"See Demons")
+					break;;
+				"Talk to Crowley")
+					Crowley
+					shopstate=0
 					break;;
 			esac
 		done
@@ -320,14 +326,12 @@ equip(){
 				done
 				 for eq in "${equipListBody[@]}"
 				 do
-					echo "$eq"
                                         if [[ "$tempequip" = ${eq} ]]; then
                                                 equip[BODY]=${tempequip}
                                         fi
 				done
 				 for eq in "${equipListWeapon[@]}"
 				 do
-					echo "$eq"
                                         if [[ "$tempequip" = ${eq} ]]; then
                                                 equip[WEAPON]=${tempequip}
                                         fi
@@ -354,10 +358,12 @@ add_equipment(){
                 equipmentNo+=($1)
                 echo "Obtained $1"
         fi
+	echo "--------------------------------------"
         for eqa in "${equipmentNo[@]}"
         do
                 echo "$eqa : ${equipment[$eqa]}"
         done
+	echo "--------------------------------------"
 }
 
 add_item(){
@@ -377,8 +383,10 @@ add_item(){
 		inventoryNo+=($1)
 		echo "Obtained $1"
 	fi
+	echo "--------------------------------------"
 	for eqi in "${inventoryNo[@]}"
         do
 		echo "$eqi : ${inventory[$eqi]}"
         done
+	echo "--------------------------------------"
 }

@@ -28,8 +28,42 @@ char(){
 	echo -e "${RED}${char}:${NC} ${yap}"
 	read -p ""
 }
-
+Tutorial(){
+	echo "[TUTORIAL]"
+	sleep 1
+	read -p "Hit ENTER to go to next line"
+	read -p "When given a choice, input the number of the option you wish to select. Example:"
+	select ans in "Hit 1 for me" "Type 2 for me" "Press 3 for me"
+	do
+		case $ans in
+			*)
+				read -p "Very Good!"
+				break;;
+		esac
+	done
+	echo "[TUTORIAL FINISHED]"
+}
+Fall(){
+	read -p "Before you, lies a massive hole. It seemed to stretch downwards infinitely. The flakes of snow that fall within only seen to disappear into the unflinching darkness."
+	read -p "The beautiful and deathly winter sprits dance around the fringes of this unending vortex, callously baiting all adventurers who dare come close to enter."
+	read -p "This is the Shonyudo no Hitomi. The gate to Hell and the Unnamed Katana."
+	read -p "You step beyond the boundary; and you fall. You seep into untenable nothingness till darkness covers you like a cloak, even the light from the snowfield above you is muffled until barely a pinpoint shimmer can be seen. And yet you continue to sink."
+	read -p "You notice this fact explicitly, that you are not falling. You are sinking, the darkness around you is brushing on your skin and you are sinking as though a great weight anchored you down. As though you fell into an ocean of black and the pressure is crushing you from all directions."
+	read -p "Deeper and deeper, and yet deeper still. Until depth had lost all meaning. Then you saw it, in brilliant red, the first light you had seen in unknowable time, the world around you blasts into a cacophony of colours so strong that you shield your eyes."
+	read -p "The ground below erupted into geysers of purple and pink, crystalline obelisks dotted the horizon as far as you could see, and the sky’s firmament is filled with the howls and calls of myriad creatures who violently stream across her. Demons. This is your destination. This is Yomi."
+	read -p "But before you take in the splendor of this new world, a significantly more pressing matter comes to the forefront of your mind. How you’re planning on sticking this landing."
+	SkillCheck AGI 10
+                                        if [[ $SKR = 1 ]]; then
+						read -p "You land, more or less, safely. At the very least alive. Your legs shake and wobble from the test it was just put through, and you only barely keep your balance, the ground twisting beneath you"
+                                        else
+						read -p "You slam into the ground at full speed. Fortunately the earth beneath you was malleable, but it still left a mark."
+                                        fi
+	read -p "You turn your gaze upwards, taking an immediate survey of where you are. From the sky it looked like nothing but red earth was beneath you, but now in place of spires and trees, an entire town stood."
+	read -p "Humans? Not as far as you could tell. Close enough? You manage to notice things with red skin and more limbs and teeth than they should have among them, but the vast majority looked terribly… normal? Undeniably demons, but normal."
+	read -p "You turn around and a woman looks down at you, she stands easily four heads above you and scowled downwards with nothing but repulsion. On the right side of her forehead was a large ebon horn and on the left side was a deep gnarled scar that ate across half her face. The atmosphere was oppressive. In her right hand, was a small book and in her left a thin crooked stick dipped in some dark fluid"
+}
 White(){
+	echo "{Talk is cheap, but I will hear you out for now}"
 	talkstate=1
         while [[ $talkstate=1 ]];
         do
@@ -105,6 +139,7 @@ Minamoto(){
 					char White "You have my permission to rise once again."
 					${dialogueChecks[endWhiteCheck]}=1
 					crowleyActiveList+=("I met a person name White")
+					talkarr+=("White")
 					break;;
 				"I want to Live!")
 					char ??? "..."
@@ -130,6 +165,7 @@ Crowley(){
                  crowleyActiveList+=("I’ve cleared the fourth floor")
         fi
         talkstate=1
+	echo "{May I be of assistance?}"
         while [[ $talkstate=1 ]];
         do
                 select rep in "${crowleyActiveList[@]}"
@@ -205,6 +241,9 @@ Crowley(){
 }
 
 Kobaneko(){
+	if [[ ${dialogueChecks[kobanBreak]} == 1 ]]; then
+                char Kobaneko "You and I have nothing to discuss. Leave."
+	else
 	if [[ $dungLevel -gt 1 && ${dialogueChecks[dungLevelKobancheck]} == 0 ]]; then
                  dialogueChecks[dungLevelKobancheck]=1
                  kobanekoActiveList+=("I’ve been to the dungeon")
@@ -213,12 +252,13 @@ Kobaneko(){
                  dialogueChecks[dungLevelKobancheck]=2
         fi
 	talkstate=1
-	while [[ $talkstate=1 ]];
-        do
 	if [[ ${dialogueChecks[kobanBreak]} == 1 ]]; then
                 read -p "We have nothing else to discuss. Leave."
-                break
+                talkstate=0
         fi
+	while [[ $talkstate=1 ]];
+        do
+	echo "{How can nya help you~}"
 	select rep in "${kobanekoActiveList[@]}"
         do
 		case $rep in
@@ -274,7 +314,10 @@ Kobaneko(){
 				break;;
 			"Crowley gave me some guidance.")
 				char Kobaneko "That old coot sure seems to have taken a liking to you. But yes, everything he said was true. The blade is a crystallization of the goddess’s power."
-				char Kobaneko "One who wields it has the power to shape the demon world, but the depths are far too dangerous, and at the end of the 4th floor stands a demon from an era long gone. Said to be so powerful that none could ever manage to stand up to him."
+				char Kobaneko "One who wields it has the power to shape the demon world, but the depths are far too dangerous, and at the end of the 4th floor stands a demon from an era long gone. Said to be so powerful that none could ever manage to stand up to him..."
+				char Kobaneko "Good luck! Here's a lucky charm from yours truly."
+				read -p "Kobaneko gives you a brilliant gold coin... the way her countenance can change in such a short time is eery."
+				add_item KobanCoin
 				break;;
 			"Crowley wants me to use the Sword to subjugate demons")
 				if [[ ${dialogueChecks[kobasubjcheck]} != 1 ]]; then
@@ -319,6 +362,7 @@ Kobaneko(){
 		esac
 	done
 done
+	fi
 }
 
 OneHornedLady(){
@@ -343,7 +387,10 @@ OneHornedLady(){
 				else
 					char "Angry Woman" "Go talk to Koban next."
 				fi
-
+				read -p "Before you can respond you're immediately accosted by another smaller woman, not as intimidating as the last but her catlike physiology and clear disregard for personal space was still startling."
+				char Kobaneko "Nya-hallo. My name is Kobaneko! I'm here to be your guide through the demon world!"
+				char Kobaneko "This is Ichor; no matter where you enter from, all humans end up here! Isn't this place great!"
+				char Kobaneko "So… What dragged nya’s sorry behind down here…"
 				break 2;;
 		esac
 	done
@@ -357,9 +404,9 @@ FinalFloor(){
 	read -p "It stirs."
 	read -p "The grey rotten corpse lurches forward, ripping off its own affixed head and leaving it dangling behind. A headless lanky creature hunched over you at least thrice your height, all the while fabric continued to pour out of its chest. Only one word it muttered, even though where once stood its head now was a mere stump, you were sure beyond doubt that this was being made by it."
 	echo ""
-	read -p "'Avenge'"
+	read -p "'Avenge...'"
 	echo ""
-	battle "${goblin[@]}"
+	battle "${izanami[@]}"
 	if [[ ${dialogueChecks[endKobanCheck]} == 1 || ${dialogueChecks[endKobanCheck]} == 1 ]]; then
 		read -p "You are successful in dispatching the goddess. Crowley steps in just behind you."
 		char Crowley "That was no goddess, merely the lingering embers of one. More akin to a demon than anything."
@@ -420,7 +467,7 @@ FinalFloor(){
 			read -p "[the look on his face is almost indecipherable, but his eyes were locked solely on you]"
 			char Crowley "Why would a human want to mingle with subhuman filth… Above his own kind. It defies all logic. No, it goes against nature itself."
 			char Crowley "An aberration like you- with all the knowledge I’ve given you. Becoming Demon King? I cannot suffer you leave this place alive"
-			battle "${goblin[@]}"
+			battle "${crowley[@]}"
 			;;
 		"subjugate")
 			read -p "You reach out and draw the beam of light, its form begins to coalesce immediately."
@@ -428,14 +475,14 @@ FinalFloor(){
 			char Kobaneko "Maybe I did rely on you far too much. Either way, I can’t very well let you leave this place knowing what you plan to do with that."
 			read -p "[the ribbons around you seem to coalesce, bundling and knotting together into a terrifying figure]"
 			char Kobaneko "If you truly believe yourself to be worthy of subjugating all demonkin, then a simple thing as defeating a Daimaou should be an afterthought"
-			battle "${goblin[@]}"
+			battle "${kobagami[@]}"
 			;;
 	esac
 	if [[ ${dialogueChecks[endWhiteCheck]} == 1 ]]; then
 		read -p "A figure manifests before you in a flash of white. The same one who saved you from the brink of death. He stood with his arms folded, and a look of pride on his face."
 		char White "You are incredible."
 		read -p "Without a second word, he is upon you."
-		battle "${goblin[@]}"
+		battle "${whiten[@]}"
 		char White "Your strength is unparalleled. You are-..."
 		read -p "His last few words were muffled, as the room began to unfold and warp. Above you, which should’ve been the upper floors of the depth, now bore open the crimson skies of the demon realm."
 		Izanagi

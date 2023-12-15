@@ -94,10 +94,9 @@ level_up(){
 }
 
 give_exp(){
-	echo "exp entered $1"
 	sleep 1
 	local exp=("$1")
-	echo "current exp $1"
+	echo "You gained $exp Experience!"
 	resources[EXP]=$((resources[EXP]+exp))
 	if [[ "${resources[EXP]}" -ge "${resources[NEXP]}" ]]; then
 		resources[EXP]=$((resources[EXP]-resources[NEXP]))
