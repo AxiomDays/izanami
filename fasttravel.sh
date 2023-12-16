@@ -21,7 +21,6 @@ travel(){
 	randomEncounter(){
 		local rand=$((RANDOM % 100 + 1))
 		local secrand=$((RANDOM % 39 + 0))
-		secrand=9
 		if [[ $rand -ge 85 ]]; then
 			encounter=${encountTable[$secrand]}
 			echo ""
@@ -65,7 +64,7 @@ travel(){
                                         fi;;
 				Treasure)
 
-					read -p "treasure get"
+					read -p "Treasure Get!"
 					treasureDrop;;
 				StrDemon)
 					local goldget=$((RANDOM % 40 + 20))

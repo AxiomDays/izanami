@@ -1,5 +1,5 @@
 declare -a townarr=("Palace" "Church" "Smithy" "Apothecary" "Demonitorium" "Dungeon" "Talk" "Status")
-declare -a talkarr=("Kobaneko" "Crowley" "Izanagi" "FinalFloor" "Exit")
+declare -a talkarr=("Kobaneko" "Exit")
 declare -A demon=(
 ["Exit"]=0
 ["Goblin"]=15
@@ -13,6 +13,7 @@ do
 ninjaTools["Shuriken"]=3
 ninjaTools["PaperBomb"]=3
 ninjaTools["FumaShuriken"]=3
+save
 select place in ${townarr[@]}
 do
 	PS3="Pick a Number: "
@@ -76,12 +77,6 @@ do
 						break;;
 					White)
 						White
-						break;;
-					FinalFloor)
-						FinalFloor
-						break;;
-					Izanagi)
-						Izanagi
 						break;;
 					Exit)
 						break;;
@@ -322,7 +317,6 @@ equip(){
 					if [[ "$tempequip" = ${eq} ]]; then
 						equip[HEAD]=${tempequip}
 					fi
-					status_equip
 				done
 				 for eq in "${equipListBody[@]}"
 				 do
@@ -337,6 +331,7 @@ equip(){
                                         fi
 				done
 				echo "about to equip check"
+				status_equip
 				equip_check;;
 		esac
 }

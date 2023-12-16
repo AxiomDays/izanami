@@ -474,7 +474,6 @@ do
 									#
 									DEF=2
 									killranny=$((RANDOM % 16 + 1))
-									killranny=16
 									if [[ "${killranny}" = 16 ]]; then
                                                                 		echo "You strike at your opponents very soul, felling them in one strike"
 										enemy[HP]=0
@@ -979,7 +978,9 @@ do
 		else
 			chargeranny=$((RANDOM % 6 + 1))
 			if [[ "$chargeranny" = 6 && "$chargevar" = 0 ]]; then
+				echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 				echo "The enemy is winding up a terrible attack..."
+				echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 				chargevar=1
 				continue
 			elif [[ "$DEF" -lt 4 ]]; then

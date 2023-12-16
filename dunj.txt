@@ -68,38 +68,33 @@ if [[ "${dungeon[$playerPos+1]}" = "-" || "${dungeon[$playerPos+1]}" = "T" || "$
 	right=1
 	movearr+="Right "
 fi
-if [[ "${dungeon[$playerPos-1]}" = "-" || "${dungeon[$playerPos-1]}" = "T" || "${dungeon[$playerPos+1]}" = "/" ]]; then
+if [[ "${dungeon[$playerPos-1]}" = "-" || "${dungeon[$playerPos-1]}" = "T" || "${dungeon[$playerPos-1]}" = "/" ]]; then
 	left=1
 	movearr+="Left "
 fi
-if [[ "${dungeon[$playerPos-8]}" = "-" || "${dungeon[$playerPos-8]}" = "T" || "${dungeon[$playerPos+1]}" = "/" && "$((playerPos-7))" -gt 0 ]]; then
+if [[ "${dungeon[$playerPos-8]}" = "-" || "${dungeon[$playerPos-8]}" = "T" || "${dungeon[$playerPos-8]}" = "/" && "$((playerPos-7))" -gt 0 ]]; then
 	up=1
 	movearr+="Up "
 fi
-if [[ "${dungeon[$playerPos+8]}" = "-" || "${dungeon[$playerPos+8]}" = "T" || "${dungeon[$playerPos+1]}" = "/" ]]; then
+if [[ "${dungeon[$playerPos+8]}" = "-" || "${dungeon[$playerPos+8]}" = "T" || "${dungeon[$playerPos+8]}" = "/" ]]; then
 	down=1
 	movearr+="Down "
 fi
 }
 checkPos
-echo "${movearr[@]}"
-echo "${dungeon[$playerPos]}"
-echo "to left: ${dungeon[$playerPos-1]}"
-echo "to right: ${dungeon[$playerPos+1]}"
 dungeon[$playerPos]="X"
 print_dunj
 
 PS3="Pick a direction: "
 while [[ $dungeonState = 1 ]]
 do
-	if [[ ${dungeon[playerPos]} == "/" ]]; then
+	if [[ $playerPos == 1 ]]; then
 		if [[ $dungLevel < 5 ]]; then
 		echo "You unlock the next level and turn back to town!"
 		dungLevel=$((dungLevel+1))
 		fi
 		break
 	fi
-	echo "pos is: $playerPos"
 select move in ${movearr[@]}
 do
 	local rand=$((RANDOM % 3 + 1))

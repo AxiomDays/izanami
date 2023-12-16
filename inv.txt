@@ -65,7 +65,7 @@ declare -A smithy=(
 
 declare -A apothy=(
 ["Medicine"]=25
-["Tonic"]=65
+["Tonic"]=150
 ["StaminaPill"]=50
 ["SenchaTea"]=100
 ["FiveFingerSeal"]=75
