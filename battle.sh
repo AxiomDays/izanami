@@ -40,23 +40,29 @@ do
 	do
 		case $option in
 			Fight)
-				#add a miss chance
 				DEF=3
-				echo "${enemy[0]}"
 				ranny=$((RANDOM % 12 + 1))
-				hitchance=$((RANDOM % (100/(stats[AGI]+eqstats[AGI])) + 1))
-				if [[ "${hitchance}" -gt 6 ]]; then
-					echo "You missed!"
-					sleep 1
-					break
+				critno=1
+				critchance=$((10*(stats[AGI]+eqstats[AGI])))
+				while [[ "${critchance}" -ge 100 ]];
+				do
+					critchance=$((critchance - 100))
+					critno=$((critno + 1))
+				done
+				hitchance=$((RANDOM % 100 + 1))
+				if [[ "${critchance}" -gt "${hitchance}" ]]; then
+					critno=$((critno + 1))
 				fi
 				POW=$(((stats[STR]+eqstats[STR]+buffValue)))
+				for (( j=0; j<$critno; j++ ));
+                                do
+				ranny=$((RANDOM % 12 + 1))
 				if [[ "$ranny" -gt 10 ]]; then
-					POWfact="Decisive"
-					fightmod=2
+					POWfact="Decisively Critical"
+					fightmod=4
 				elif [[ "$ranny" -ge 4 ]]; then
 					POWfact="Solid"
-					fightmod=1
+					fightmod=2
 				else
 					POWfact="Weak"
 					fightmod=1
@@ -67,13 +73,14 @@ do
 				fi
 				enemy[0]=$((enemy[0]-(POW*fightmod)))
 				echo "Enemy took a ${POWfact} hit and lost $((POW*fightmod)) HP"
+				done
+				echo "You struck the enemy ${critno} times"
 				echo "${enemy[0]}"
 				break;;
 			Magic)
 				DEF=3
 				select spell in ${playerMagArr[@]}
 				do
-					echo "${enemy[0]}"
 					case $spell in
 						Scathe)
 							 if [[ "${resources[MAG]}" -le 5 ]]; then
@@ -337,7 +344,6 @@ do
 				done
 				break;;
 			Heal)
-				echo "entered heal"
 				DEF=3
 				ranny2=$((RANDOM % 15 + (stats[WIS]+eqstats[WIS])*2))
 				DocHeal=$(((stats[WIS]+eqstats[WIS])*3 + ranny2))
@@ -601,6 +607,9 @@ do
                                                                 derived[STA]=$((derived[STA]-25))
                                                                 DEF=5
 								derived[HP]=$(((derived[HP]+(stats[GUI]*2))))
+								if [[ ${derived[HP]} -gt ${derived[MaxHP]} ]]; then
+                                                                derived[HP]=${derived[MaxHP]}
+                                                        	fi
 								dazzleranny=$((RANDOM % 4 + 1))
                                                                 if [[ "$dazzleranny" = 4 ]]; then
                                                                         dazzle=1
@@ -641,7 +650,7 @@ do
                                         	esac
                                 	done
 				else
-					select attack in StrongStrike-15- BloodTransfusion-25- Scope-10- 
+					select attack in StrongStrike-15- MAGTransfusion-25- BloodTransfusion-40- Scope-10- 
                                 	do
                                         	case $attack in
                                                 	StrongStrike-15-)
@@ -659,7 +668,7 @@ do
                                                                 echo "You spend your pent up energy and swing with gusto, dealing ${POW} damage"
                                                                 echo "${enemy[0]}"
                                                                 break;;
-							BloodTransfusion-25-)
+							MAGTransfusion-25-)
 								if [[ "${derived[STA]}" -lt 0 ]]; then
                                                                         echo "You're too out of breath to use this technique"
                                                                         techbreak=1
@@ -671,6 +680,28 @@ do
 								echo "Spening 25 HP and 25 STA, you gain "$((stats[INT]+eqstats[INT]))" MAG"
 								resources[MAG]=$((resources[MAG]+(stats[INT]+eqstats[INT])))
 								break;;
+							BloodTransfusion-40-)
+                                                                if [[ "${derived[STA]}" -lt 0 ]]; then
+                                                                        echo "You're too out of breath to use this technique"
+                                                                        techbreak=1
+                                                                        break
+                                                                fi
+								if [[ "${resources[MAG]}" -lt 5 ]]; then
+                                                                        echo "You've run out of MAG!"
+                                                                        techbreak=1
+                                                                        break
+                                                                fi
+                                                                derived[STA]=$((derived[STA]-40))
+								resources[MAG]=$((resources[MAG]-5))
+                                                                DEF=3
+                                                                echo "You use your energy and a bit of MAG to restore your health"
+								echo "Spening 5 MAG and 40 STA, you gain "$(((stats[WIS]+eqstats[WIS]) * 10))" HP"
+								tempbltf=$(((stats[WIS]+eqstats[WIS])*10))
+								derived[HP]=$((derived[HP] + tempbltf))
+								if [[ ${derived[HP]} -gt ${derived[MaxHP]} ]]; then
+                                                                derived[HP]=${derived[MaxHP]}
+								fi
+                                                                break;;
 							Scope-10-)
                                                                 if [[ "${derived[STA]}" -lt 0 ]]; then
                                                                         echo "You're too out of breath to use this technique"
@@ -774,7 +805,7 @@ do
 			"Great Devourer")
 				add_equipment "DevourerChitin";;
 			"Iron Gigas")
-				add_equipment "Excalihuh?"
+				add_equipment "Excalihuh?";;
 		esac
 		break
 	elif [[ "${runfactor}" = 6 ]]; then
@@ -814,6 +845,12 @@ do
 		enemyPOW=$(((enemy[1]+ranny)/DEF))
 	fi
 	enemyMAG=$(((enemy[2]+mranny)+ranny/2))
+	guardchance=$((RANDOM % 50 + 1))
+	echo "chance is ${guardchance}";
+	echo "plus $((guardchance + (stats[GUI]+eqstats[GUI])))";
+	if [[ "$((guardchance + (stats[GUI]+eqstats[GUI])))" -gt 55 ]]; then
+		echo "You guard against the attack."
+	else
 	if [[ "${enemy[8]}" -gt 0 && "${chargevar}" = 0 ]]; then
 		magchance=$((RANDOM % 6 + 1))
 		magchoice=$((RANDOM % ${enemy[8]} + 0 ))
@@ -831,7 +868,7 @@ do
 					1)
                         	                echo "${enemy[7]} casts ${enemyMag[$magchoice]}"
                                 	        derived[HP]=$((derived[HP]-(enemyMAG*2)))
-						echo "A wave of Force slams into your chest and you take $((enemyPOW*2)) damage";;
+						echo "A wave of Force slams into your chest and you take $((enemyMAG*2)) damage";;
 					2)
         	                                echo "${enemy[7]} casts ${enemyMag[$magchoice]}"
                 	                        enemy[1]=$((enemy[2]+5))
@@ -889,8 +926,8 @@ do
 	                                        echo "You burn and take $((magdmg)) damage";;
         	                        1)
                 	                        echo "${enemy[7]} casts ${enemyPhy[$magchoice]}"
-                        	                derived[HP]=$((derived[HP]-(enemyPOW*2)))
-                                	        echo "A wave of Force slams into your chest and you take $((enemyPOW*2)) damage";;
+						derived[HP]=$((derived[HP]-(enemyPOW*2)/DEF))
+						echo "A wave of Force slams into your chest and you take $(((enemyPOW*2)/DEF)) damage";;
 	                                2)
         	                                echo "${enemy[7]} casts ${enemyPhy[$magchoice]}"
                 	                        enemy[1]=$((enemy[1]+8))
@@ -961,8 +998,8 @@ do
                                                 echo "Innumerable firearms crack off at once, hitting you $hitno times!"
                                                 ;;
 					"Shikigami Restoration")
-						enemy[0]=$((enemy[0]+(enemy[2]*2)))
-						echo "The enemy recovers a portion of their health. Healing for $((enemy[2]*2))";;
+						enemy[0]=$((enemy[0]+(enemy[2]*3)))
+						echo "The enemy recovers a portion of their health. Healing for $((enemy[2]*3))";;
 					"Myriad Flash")
 						hitno=$((RANDOM % 3 + 1))
                                                 for (( j=0 ; j<$hitno ; j++ ));
@@ -1008,12 +1045,16 @@ do
                                 chargevar=0
                         fi
 	fi
+	fi
 	if [[ "${derived[HP]}" -le 0 ]]; then
-		if [[ $diedYet == 0 ]]; then
+		if [[ "$diedYet" = 0 ]]; then
 			diedYet=1
+			sleep 2
 			Minamoto
+			derived[HP]=$((derived[MaxHP]))
+		else
+			die
 		fi
-		die
 	fi
 	 echo "${enemy[0]}"
 done
@@ -1024,7 +1065,7 @@ die(){
 	echo "You died having achieved nothing."
 	sleep 1
 	echo "Your meagre grave less than a stepping stone for those that will come after."
-	sleep 2
+	sleep 1
 	echo "Your story muffled by the soft earth and your hollowed bones."
 	sleep 1
 	echo "Another lost soul cursed to haunt the pit forever."

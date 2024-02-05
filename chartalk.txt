@@ -137,7 +137,7 @@ Minamoto(){
 					char ??? "Continue to attain strength!  Until none can bear to stand before you, until you are unparalleled."
 					char ??? "You may call me 'White'"
 					char White "You have my permission to rise once again."
-					${dialogueChecks[endWhiteCheck]}=1
+					dialogueChecks[endWhiteCheck]=1
 					crowleyActiveList+=("I met a person name White")
 					talkarr+=("White")
 					break;;
@@ -230,7 +230,7 @@ Crowley(){
 					char Crowley "Our research indicates that through the unnamed sword's power to manipulate seithr, it as well has the power to absolutely control the hearts of demons, given that the proper ritual is performed."
 					char Crowley "With this in our grasp, the entirety of the demon realm will become but a stepping stone for mankind's future. Our future."
 					char Crowley "Come, we must arrive at the last floor without delay. I fear external actors are acting against us."
-					${dialogueChecks[endCrowCheck]}=1
+					dialogueChecks[endCrowCheck]=1
 					break;;
 				"Bye")
 					talkstate=0
@@ -343,7 +343,7 @@ Kobaneko(){
 							char Kobaneko "Allow me to let you in on a secret so steeped in hell and wrapped in the secrets of demon-tongue, that not even those of the Blue know this."
 							char Kobaneko "‘The Goddess is alive’." 
 							char Kobaneko "Not an undying corpse, or in some deep sleep, but Alive. Shocking, I know, but we can feel it. All demons can, she is our mother, after all. We feel the soft thumping under the earth with every beat of her heart. She is awake, but quiet."
-							${dialogueChecks[endKobanCheck]}=1
+							dialogueChecks[endKobanCheck]=1
 							break;;
 					esac
 				done
@@ -545,13 +545,23 @@ Ending(){
 	ending=("$1") 
 	case $ending in
 		"redeemed")
-			echo "Ended Redeemed";;
+			echo "You manage to return to the human world, gold-silver blade in hand. The tale of your adventures in the pit spread far and wide, and you become something of a local legend."
+			echo "Your legend washes over your unseemly past and your popularity gets you mercenary work from powerful lords. You grow rich in treasure and favour, and retire not too long after."
+			echo "On a night like any other, while asleep in your home, an unassailable swarm of demons rolls over the land and you are consumed.";;
 		"ascend")
-			echo "Ended Ascend";;
+			echo "As you wield the sword, ‘Hi-no-Kagutsuchi’, you feel demonic energy swell within you. Your body is permanently transformed. You can see much more than before and your power only seems to grow by the second. With this newfound strength, you set out into the realms of hell as the New Daimaou."
+			echo "Most demons you encounter wilt in your presence, some would simply show reverence. Others would challenge you for your title. You take back territory from demons that once belonged to Ichor."
+			echo "Eventually, Ichor is expanded out tremendously and the narrow pit that connected both worlds widens into a gaping maw as a result. Using your experience living in both, you allow for trade and communication to spur between both worlds."
+			echo "Demons and humans find more in common and you create a somewhat uneasy alliance between both races. Your image is immortalized in the center of Ichor as Daimaou ${name}";;
 		"subjugate")
-			echo "Ended Subjugate";;
+			echo "With the power of the Imperial Blade, you bring all of demonkind to heel. Though they wail and howl with ferocity, their bodies no longer belong to them."
+			echo "Leading your monstrous hoard out of the pit, you wash over the eastern half of the country like a plague, swallowing any arrant lord who dared to challenge your rule. Not long after you become known as an impossibly skilled sorcerer capable of commanding infinite terrible demons."
+			echo "Alongside the assistance of the Order of Blue and the shrewd Crowley, you take over the majority of Japan and entitle yourself as 'The Emperor Mandated by Hell'";;
 		"whitewar")
-			echo "Ended WhiteWar";;
+			echo "You become as light, your body and blade is weightless and your mind is scattered against time and space. You are engulfed in pure white and for a time, you sleep."
+			echo "You don’t know for how long, but soon enough you awaken elsewhere. Before you stands the visage of a woman and in front of her lay a terrible demon wielding a flaming sword."
+			echo "Your memories are a haze and you are unsure where you are, but you understand deep within yourself that you are here to slaughter. A feeling so deep and inscribed that it seemed as though it was what you were born for."
+			echo "And so with thundering steel, the fated clash begins anew.";;
 	esac
 	Credits
 }
@@ -560,8 +570,6 @@ Credits(){
 	echo "developed in vi by AxiomDays" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols)
 	echo ""
 	echo "written by AxiomDays" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols)
-	echo ""
-	echo "ascii-art from ''" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols)
 	echo ""
 	echo "Thanks for Playing!" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols)
 	exit

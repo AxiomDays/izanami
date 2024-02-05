@@ -38,7 +38,6 @@ dungeon1start=18
 dungeon1stop=2
 dunj(){
 dungeonState=1
-#declare -a dungeon=(█ 0 0 0 0 0 █ █ █ █ █  0 0 "T" 0 █ █ 0 0 0 0 0 0 █ █ █ 0 "T" 0 0 █ █ █ █ █ 0 0 █ █ █ )
 local dungeon=("$@")
 print_dunj(){
 	dungeon[$playerPos]="X"
@@ -53,9 +52,12 @@ do
 	done
 	echo ""
 done
+echo "LEGEND"
+echo "X = Player"
+echo "T = Treasure"
+echo "/ = Stairs to next floor"
 }
 playerPos=$dungeon1start
-print_dunj
 right=0
 left=0
 up=0

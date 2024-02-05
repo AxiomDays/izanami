@@ -1,13 +1,13 @@
 #!/bin/bash
 source funcs.txt
 source inv.txt
-source town.sh
+source town.txt
 source stats.txt
-source battle.sh
+source battle.txt
 source dunj.txt
 source deimos.txt
-source chartalk.sh
-source fasttravel.sh
+source chartalk.txt
+source fasttravel.txt
 
 declare -A stats=(
 ["STR"]=5
@@ -59,6 +59,8 @@ declare -A equip=(
 ["BODY"]=
 ["WEAPON"]=
 )
+
+diedYet=0
 
 if [[ -f "save.conf" ]]; then
 	source "save.conf"
