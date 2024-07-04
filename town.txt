@@ -1,9 +1,12 @@
-declare -a townarr=("Palace" "Church" "Smithy" "Apothecary" "Demonitorium" "Dungeon" "Talk" "Status")
-declare -a talkarr=("Kobaneko" "Exit")
+declare -a townarr=("Palace" "Church" "Smithy" "Apothecary" "Demonitorium" "Dungeon" "Talk to Locals" "Status")
+declare -a talkarr=("Kobaneko" "Wolf" "Exit")
 declare -A demon=(
 ["Exit"]=0
 ["Goblin"]=15
-["Oni"]=10
+["Oni"]=20
+["Imp"]=40
+["HobGoblin"]=50
+["Orias"]=80
 )
 town(){
 townstate=1
@@ -14,12 +17,12 @@ ninjaTools["Shuriken"]=3
 ninjaTools["PaperBomb"]=3
 ninjaTools["FumaShuriken"]=3
 save
-select place in ${townarr[@]}
+select place in "${townarr[@]}"
 do
 	PS3="Pick a Number: "
 	case $place in
 		Status)
-			select choice in Stats Equipment Magic Save Exit
+			select choice in Stats Equipment Magic Save Debug Exit
 			do
 				case $choice in
 					Stats)
@@ -50,6 +53,20 @@ do
 					Save)
 						save
 						break 2;;
+					Debug)
+						read -p "Insert Password" pass
+						if [[ $pass == "megami" ]]; then
+							select val in DungeonLvl
+							do
+								case $val in
+									DungeonLvl)
+										dungLevel=$((dungLevel+1))
+										break;;
+								esac
+							done
+						else
+							echo "wrong pass, play the game."
+						fi;;
 					Exit)
 						break 2;;
 				esac
@@ -68,7 +85,7 @@ do
 		Demonitorium)
 			shop demon
 			break;;
-		Talk)
+		"Talk to Locals")
 			select person in "${talkarr[@]}"
 			do
 				case $person in
@@ -77,6 +94,9 @@ do
 						break;;
 					White)
 						White
+						break;;
+					Wolf)
+						Wolf
 						break;;
 					Exit)
 						break;;
@@ -98,7 +118,6 @@ do
 					;;
 				4)
 					dunj ${dungeon4[@]}
-					battle "${gigas[@]}"
 					;;
 				5)
 					dunj ${dungeon5[@]}
@@ -247,7 +266,7 @@ elif [[ "$1" = "church" ]]; then
 							 resources[GOLD]=$((resources[GOLD]-cost))
 							 resources[MAG]=$((resources[MAG]+number))
 						 else
-							 echo "You don't have enough Yen"
+							 echo "You don't have enough Gold"
 							 continue
 						 fi
 					else
@@ -261,7 +280,7 @@ elif [[ "$1" = "church" ]]; then
 				"Talk to Crowley")
 					Crowley
 					shopstate=0
-					break;;
+					break 2;;
 			esac
 		done
                 select smit in ${!demon[@]}
@@ -280,7 +299,7 @@ elif [[ "$1" = "church" ]]; then
                                                         resources[GOLD]=$((resources[GOLD]-demon[$smit]))
                                                         break
                                                 else
-                                                        echo "Broke ass"
+                                                        echo "You don't have enough"
                                                         break
                                                 fi
                                         else
@@ -295,7 +314,52 @@ elif [[ "$1" = "church" ]]; then
                                                         resources[GOLD]=$((resources[GOLD]-demon[$smit]))
                                                         break
                                                 else
-                                                        echo "Broke ass"
+                                                        echo "You don't have enough"
+                                                        break
+                                                fi
+                                        else
+                                                continue
+                                        fi;;
+				Imp)
+                                        echo "That will be ${demon[$smit]} yen"
+                                        read -p "[y/n]: " reply
+                                        if [[ "$reply" = y || "$reply" = Y ]]; then
+                                                if [[ "${resources[GOLD]}" -ge "${demon[$smit]}" ]]; then
+                                                        battle "${imp[@]}"
+                                                        resources[GOLD]=$((resources[GOLD]-demon[$smit]))
+                                                        break
+                                                else
+                                                        echo "You don't have enough"
+                                                        break
+                                                fi
+                                        else
+                                                continue
+                                        fi;;
+				HobGoblin)
+                                        echo "That will be ${demon[$smit]} yen"
+                                        read -p "[y/n]: " reply
+                                        if [[ "$reply" = y || "$reply" = Y ]]; then
+                                                if [[ "${resources[GOLD]}" -ge "${demon[$smit]}" ]]; then
+                                                        battle "${hobgoblin[@]}"
+                                                        resources[GOLD]=$((resources[GOLD]-demon[$smit]))
+                                                        break
+                                                else
+                                                        echo "You don't have enough"
+                                                        break
+                                                fi
+                                        else
+                                                continue
+                                        fi;;
+				Orias)
+                                        echo "That will be ${demon[$smit]} yen"
+                                        read -p "[y/n]: " reply
+                                        if [[ "$reply" = y || "$reply" = Y ]]; then
+                                                if [[ "${resources[GOLD]}" -ge "${demon[$smit]}" ]]; then
+                                                        battle "${orias[@]}"
+                                                        resources[GOLD]=$((resources[GOLD]-demon[$smit]))
+                                                        break
+                                                else
+                                                        echo "You don't have enough"
                                                         break
                                                 fi
                                         else

@@ -1,7 +1,7 @@
 derived_check(){
 SUM_HP1=$((stats[END]+eqstats[END]))
 SUM_HP2=$((stats[WIS]+eqstats[WIS]))
-derived[MaxHP]=$(((SUM_HP1*10)+(SUM_HP2*3)))
+derived[MaxHP]=$(($(((SUM_HP1*10)+(SUM_HP2*3))) + $((resources[LVL]*15))))
 derived[HP]=${derived[MaxHP]}
 derived[MaxSTA]=$(((stats[AGI]+stats[END]+eqstats[AGI]+eqstats[END])*3))
 derived[STA]=${derived[MaxSTA]}
@@ -35,11 +35,11 @@ level_up(){
 			echo "INT and WIS gained"
 			;;
 		Destitute)
-			 stats[STR]=$((stats[STR]+1))
+			 stats[STR]=$((stats[STR]+2))
 			 stats[WIS]=$((stats[WIS]+1))
-			 stats[INT]=$((stats[INT]+1))
+			 stats[INT]=$((stats[INT]+2))
 			 stats[GUI]=$((stats[GUI]+1))
-			 stats[AGI]=$((stats[AGI]+1))
+			 stats[AGI]=$((stats[AGI]+2))
 			 stats[END]=$((stats[END]+1))
 			 echo "ALL gained."
 			;;

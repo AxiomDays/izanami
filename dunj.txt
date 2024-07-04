@@ -91,9 +91,14 @@ PS3="Pick a direction: "
 while [[ $dungeonState = 1 ]]
 do
 	if [[ $playerPos == 1 ]]; then
-		if [[ $dungLevel < 5 ]]; then
-		echo "You unlock the next level and turn back to town!"
-		dungLevel=$((dungLevel+1))
+		if [[ $dungLevel == 4 ]]; then
+			battle "${gigas[@]}"
+                	echo "You fell the impermeable Iron Golem obstructing the next floor and return to town!"
+			echo ""
+                	dungLevel=$((dungLevel+1))
+		elif [[ $dungLevel < 5 ]]; then
+			echo "You unlock the next level and turn back to town!"
+			dungLevel=$((dungLevel+1))
 		fi
 		break
 	fi

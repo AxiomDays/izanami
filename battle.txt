@@ -57,7 +57,7 @@ do
 				for (( j=0; j<$critno; j++ ));
                                 do
 				ranny=$((RANDOM % 12 + 1))
-				if [[ "$ranny" -gt 10 ]]; then
+				if [[ "$ranny" -gt 11 ]]; then
 					POWfact="Decisively Critical"
 					fightmod=4
 				elif [[ "$ranny" -ge 4 ]]; then
@@ -93,7 +93,7 @@ do
 								 continue
 							 fi
 							 MagBoost
-							 POW=$(($(((stats[INT]+eqstats[INT])*2)) * $((BoostVal/100))))
+							 POW=$(($(((stats[INT]+eqstats[INT])*4)) * $((BoostVal/100))))
 							 if [[ "${enemy[5]}" = "Fire" ]]; then
 								 POW=$((POW*3))
 								 echo "The enemy is weak!"
@@ -122,7 +122,7 @@ do
                                                                  continue
                                                          fi
 							 MagBoost
-							  POW=$(($(((stats[INT]+eqstats[INT])*2)) * $((BoostVal/100))))
+							  POW=$(($(((stats[INT]+eqstats[INT])*4)) * $((BoostVal/100))))
 							 if [[ "${enemy[5]}" = "Water" ]]; then
                                                                  POW=$((POW*3))
                                                                  echo "The enemy is weak!"
@@ -144,7 +144,7 @@ do
                                                                  continue
                                                          fi
 							 MagBoost
-							  POW=$(($(((stats[INT]+eqstats[INT])*2)) * $((BoostVal/100))))
+							  POW=$(($(((stats[INT]+eqstats[INT])*4)) * $((BoostVal/100))))
                                                          if [[ "${enemy[5]}" = "Bolt" ]]; then
                                                                  POW=$((POW*3))
                                                                  echo "The enemy is weak!"
@@ -173,7 +173,7 @@ do
                                                                  continue
                                                          fi
 							 MagBoost
-							  POW=$(($(((stats[INT]+eqstats[INT])*2)) * $((BoostVal/100))))
+							  POW=$(($(((stats[INT]+eqstats[INT])*4)) * $((BoostVal/100))))
                                                          if [[ "${enemy[5]}" = "Wind" ]]; then
                                                                  POW=$((POW*3))
                                                                  echo "The enemy is weak!"
@@ -426,10 +426,10 @@ do
                                                                 derived[STA]=$((derived[STA]-15))
 								DEF=3
 								ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
-								POW=$(((stats[STR]+eqstats[STR])*2))
+								POW=$(((stats[STR]+eqstats[STR])*3))
 								POWOW=$((POW+ranny))
 								enemy[HP]=$(((enemy[0]-(POWOW))))
-								echo "You spend your pent up energy and swing with gusto, dealing ${POW} damage"
+								echo "You spend your pent up energy and swing with gusto, dealing ${POWOW} damage"
 								echo "${enemy[0]}"
 								break;;
 							Ichimonji-24-)
@@ -441,7 +441,7 @@ do
                                                                 derived[STA]=$((derived[STA]-24))
 								DEF=1
                                                                 ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
-                                                                POW=$(((stats[STR]+eqstats[STR])*3))
+                                                                POW=$(((stats[STR]+eqstats[STR])*4))
                                                                 POWOW=$((POW+ranny))
                                                                 enemy[HP]=$(((enemy[0]-(POWOW))))
                                                                 echo "Letting go of your guard, ignorant of all defense, you put yor very soul into one devastating swing, dealing ${POWOW} damage"
@@ -461,8 +461,8 @@ do
 								fi
                                                                 ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
                                                                 POW=$(((stats[STR]+eqstats[STR])+ranny))
-                                                                enemy[HP]=$(((enemy[0]-(POW))))
-                                                                echo "Channeling the power of the moon you perform a dazzling strike, dealing ${POW} damage"
+                                                                enemy[HP]=$((enemy[0]-(POW*2)))
+                                                                echo "Channeling the power of the moon you perform a dazzling strike, dealing $((POW*2)) damage"
                                                                 echo "${enemy[0]}"
                                                                 break;;
 							GambolShroud-35-)
@@ -504,7 +504,7 @@ do
 								derived[STA]=$((derived[STA]-15))
 								DEF=3
                                                                 ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
-                                                                POW=$(((stats[STR]+eqstats[STR])*2))
+                                                                POW=$(((stats[STR]+eqstats[STR])*3))
                                                                 POWOW=$((POW+ranny))
                                                                 enemy[HP]=$(((enemy[0]-(POWOW))))
                                                                 echo "You spend your pent up energy and swing with gusto, dealing ${POW} damage"
@@ -519,7 +519,7 @@ do
 								derived[STA]=$((derived[STA]-27))
 								DEF=3
                                                                 ranny=$((RANDOM % 15 + 8))
-                                                                POW=$(((stats[STR]+eqstats[STR])*1))
+                                                                POW=$(((stats[AGI]+eqstats[AGI])*2))
                                                                 POWOW=$((POW+ranny))
                                                                 enemy[HP]=$(((enemy[0]-(POWOW))))
 								acuranny=$((RANDOM % 6 + 1))
@@ -553,7 +553,7 @@ do
 								derived[STA]=$((derived[STA]-22))
 								DEF=3
                                                                 ranny=$((RANDOM % 15 + 8))
-                                                                POW=$(((stats[AGI]+eqstats[AGI])*1))
+                                                                POW=$(((stats[AGI]+eqstats[AGI])*3))
                                                                 POWOW=$((POW+ranny))
 								if [[ "${enemy[5]}" = Wind ]]; then
 									enemy[HP]=$(((enemy[0]-(POWOW*2))))
@@ -606,7 +606,7 @@ do
                                                                 fi
                                                                 derived[STA]=$((derived[STA]-25))
                                                                 DEF=5
-								derived[HP]=$(((derived[HP]+(stats[GUI]*2))))
+								derived[HP]=$(((derived[HP]+(stats[GUI]*3))))
 								if [[ ${derived[HP]} -gt ${derived[MaxHP]} ]]; then
                                                                 derived[HP]=${derived[MaxHP]}
                                                         	fi
@@ -614,7 +614,7 @@ do
                                                                 if [[ "$dazzleranny" = 4 ]]; then
                                                                         dazzle=1
                                                                 fi
-								echo "You make an emboldened and entrancing claim, healing $((stats[GUI]*2)) "
+								echo "You make an emboldened and entrancing claim, healing $((stats[GUI]*2))"
                                                                 echo "${enemy[0]}"
                                                                 break;;
 							Scope-10-)
@@ -662,7 +662,7 @@ do
                                                                 derived[STA]=$((derived[STA]-15))
                                                                 DEF=3
                                                                 ranny=$((RANDOM % (stats[STR]+eqstats[STR]) + stats[STR]))
-                                                                POW=$(((stats[STR]+eqstats[STR])*2))
+                                                                POW=$(((stats[STR]+eqstats[STR])*3))
                                                                 POWOW=$((POW+ranny))
                                                                 enemy[HP]=$(((enemy[0]-(POWOW))))
                                                                 echo "You spend your pent up energy and swing with gusto, dealing ${POW} damage"
@@ -838,16 +838,14 @@ do
 
 	sleep 1
 	ranny=$((RANDOM % enemy[1] + 2))
-	mranny=$((RANDOM % enemy[2] + 1))
+	mranny=$((RANDOM % enemy[2] + 2))
 	if [[ "$chargevar" = 1 ]]; then
 		enemyPOW=$(((enemy[1]*4)/DEF))
 	else
 		enemyPOW=$(((enemy[1]+ranny)/DEF))
 	fi
-	enemyMAG=$(((enemy[2]+mranny)+ranny/2))
+	enemyMAG=$(($(((enemy[2]+mranny)+ranny))/DEF))
 	guardchance=$((RANDOM % 50 + 1))
-	echo "chance is ${guardchance}";
-	echo "plus $((guardchance + (stats[GUI]+eqstats[GUI])))";
 	if [[ "$((guardchance + (stats[GUI]+eqstats[GUI])))" -gt 55 ]]; then
 		echo "You guard against the attack."
 	else
@@ -855,6 +853,7 @@ do
 		magchance=$((RANDOM % 6 + 1))
 		magchoice=$((RANDOM % ${enemy[8]} + 0 ))
 		skillchance=$((RANDOM % 4 + 1))
+		skillchance=4
 		if [[ ${enemy[9]} == 2 ]]; then
 			magchance=$((magchance+2))
                 fi
@@ -863,8 +862,8 @@ do
 				case $magchoice in
 					0)
 						echo "${enemy[7]} casts ${enemyMag[$magchoice]}"
-						derived[HP]=$((derived[HP]-(enemyMAG/DEF)))
-						echo "You burn and take $((enemyMAG/DEF)) damage";;
+						derived[HP]=$((derived[HP]-(enemyMAG)))
+						echo "You burn and take $((enemyMAG)) damage";;
 					1)
                         	                echo "${enemy[7]} casts ${enemyMag[$magchoice]}"
                                 	        derived[HP]=$((derived[HP]-(enemyMAG*2)))
@@ -965,8 +964,8 @@ do
 						echo "You got hit $hitno times!"
 						;;
 					"Devour")
-						derived[HP]=$((derived[HP]-(enemyPOW+enemyMag)))
-						enemy[0]=$((enemy[0]+(enemyPOW+enemyMag)/2))
+						derived[HP]=$((derived[HP]-(enemyPOW+enemyMAG)))
+						enemy[0]=$((enemy[0]+(enemyPOW+enemyMAG)/2))
 						echo "A bite was taken out of you! You take $(((enemyPOW+enemyMag)/2)) damage and the enemy heals!"
 						;;
 					"Psychic Attack")
@@ -978,11 +977,11 @@ do
 						statusfx[EnExhaust]=1
                                                 echo "Fire black as pitch surrounds you and you take $((enemyPOW*2)) damage. Your energy is being sapped.";;
 					"Venom Bite")
-						derived[HP]=$((derived[HP]-(enemyPOW)))
+						derived[HP]=$((derived[HP]-(enemyPOW*2)))
 						statusfx[toxin]=1
                                                 echo "You take a deadly bite and poison shoots inside of you, dealing $((enemyPOW*2)) damage.";;
 					"Cataclysm")
-                                                derived[HP]=$((derived[HP]-(enemyMag*2)))
+                                                derived[HP]=$((derived[HP]-(enemyMAG*2)))
                                                 echo "A wave of pure Seithr slams you into the nearby wall dealing $((enemyPOW*2)) damage.";;
 					"100-Layer Lacquered Sealing Pagoda")
 						statusfx[sealed]=1
@@ -998,14 +997,14 @@ do
                                                 echo "Innumerable firearms crack off at once, hitting you $hitno times!"
                                                 ;;
 					"Shikigami Restoration")
-						enemy[0]=$((enemy[0]+(enemy[2]*3)))
-						echo "The enemy recovers a portion of their health. Healing for $((enemy[2]*3))";;
+						enemy[0]=$((enemy[0]+(enemy[2]*4)))
+						echo "The enemy recovers a portion of their health. Healing for $((enemy[2]*4))";;
 					"Myriad Flash")
 						hitno=$((RANDOM % 3 + 1))
                                                 for (( j=0 ; j<$hitno ; j++ ));
                                                 do
-                                                        echo "You got hit for $((enemyMag*2)) damage!"
-                                                        derived[HP]=$((derived[HP]-(enemyMag*2)))
+                                                        echo "You got hit for $((enemyMAG*2)) damage!"
+                                                        derived[HP]=$((derived[HP]-(enemyMAG*2)))
                                                         sleep 0.5
                                                 done
                                                 echo "The volley of light strikes you $hitno times!"

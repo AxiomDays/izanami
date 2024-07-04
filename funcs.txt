@@ -13,7 +13,9 @@ done
 }
 
 save(){
-
+if [[ ! -f "save.conf" ]]; then
+       echo "no save data detected. new data created."
+fi
 echo "
 name=(${name[@]})
 age=${age}
@@ -107,6 +109,8 @@ declare -A inventory=(
 
 
 " > save.conf
+echo "Saving..."
+sleep 1
 }
 
 whom(){
@@ -121,27 +125,22 @@ equip_check () {
         eqstats[WIS]=0	
 	case ${equip[HEAD]} in
 		Turban)
-			echo "${equip[HEAD]} Equipped"
 			eqstats[END]=$((eqstats[END]+2))
 			eqstats[WIS]=$((eqstats[WIS]+2))
 			;;
 		WoolCap)
-			echo "${equip[HEAD]} Equipped"
 			eqstats[END]=$((eqstats[END]+3))
                         eqstats[AGI]=$((eqstats[AGI]+2))
                         ;;
 		Helmet)
-			echo "${equip[HEAD]} Equipped"
 			eqstats[END]=$((eqstats[END]+3))
                         eqstats[STR]=$((eqstats[STR]+4))
                         ;;
 		WitchHat)
-			echo "${equip[HEAD]} Equipped"
 			eqstats[INT]=$((eqstats[END]+4))
                         eqstats[WIS]=$((eqstats[WIS]+2))
                         ;;
 		DemonHorn)
-			echo "${equip[HEAD]} Equipped"
                         eqstats[END]=$((eqstats[END]+5))
                         eqstats[STR]=$((eqstats[STR]+8))
                         ;;
@@ -149,23 +148,18 @@ equip_check () {
 
 	case ${equip[BODY]} in
 		Shirt)
-			echo "${equip[BODY]} Equipped"
                         eqstats[END]=$((eqstats[END]+5))
                         ;;
 		Lthr.Armor)
-			echo "${equip[BODY]} Equipped"
                         eqstats[END]=$((eqstats[END]+7))
 			eqstats[AGI]=$((eqstats[AGI]-3))
                         ;;
 		TurtleShell)
-			echo "${equip[BODY]} Equipped"
                         eqstats[END]=$((eqstats[END]+10));;
 		 NinjaArmor)
-                        echo "${equip[BODY]} Equipped"
                         eqstats[END]=$((eqstats[END]+6))
                         eqstats[AGI]=$((eqstats[AGI]+4));;
 		DevourerChitin)
-			echo "${equip[BODY]} Equipped"
                         eqstats[END]=$((eqstats[END]+10))
                         eqstats[AGI]=$((eqstats[STR]+5))
                         ;;
@@ -173,16 +167,13 @@ equip_check () {
 
 	case ${equip[WEAPON]} in
 		ShortSword)
-			echo "${equip[WEAPON]} Equipped" 
 			eqstats[STR]=$((eqstats[STR]+3));;
 		BloodiedDagger)
-			echo "${equip[WEAPON]} Equipped"
                         eqstats[STR]=$((eqstats[STR]+3))
 			eqstats[AGI]=$((eqstats[AGI]+3))
-			activeElement="Earth";;
+			activeElement="Blood";;
 		SpinningChakram)
 		if [[ ${class} = "Shinobi" ]]; then
-			echo "${equip[WEAPON]} Equipped"
                         eqstats[STR]=$((eqstats[STR]+3))
                         eqstats[AGI]=$((eqstats[AGI]+3))
                         activeElement="Wind"
@@ -190,24 +181,23 @@ equip_check () {
 			echo "Can only be equipped by shinobi."
 		fi;;
 		BloodSword)
-			echo "${equip[WEAPON]} Equipped"
-                        eqstats[STR]=$((eqstats[STR]+5));;
-		GigantEdge)
-			echo "${equip[WEAPON]} Equipped"
-                        eqstats[STR]=$((eqstats[STR]+7));;
-		NinjaSword)
-                        echo "${equip[WEAPON]} Equipped"
                         eqstats[STR]=$((eqstats[STR]+5))
-			eqstats[AGI]=$((eqstats[AGI]+4));;
+			activeElement="Blood";;
+		GigantEdge)
+                        eqstats[STR]=$((eqstats[STR]+7))
+			activeElement="Earth";;
+		NinjaSword)
+                        eqstats[STR]=$((eqstats[STR]+5))
+			eqstats[AGI]=$((eqstats[AGI]+4))
+			activeElement="Wind";;
 		IceBrand)
-			echo "${equip[WEAPON]} Equipped"
                         eqstats[STR]=$((eqstats[STR]+7))
                         activeElement="Water";;
 		Excalihuh?)
-			echo "${equip[WEAPON]} Equipped"
 			eqstats[END]=$((eqstats[END]+5))
                         eqstats[STR]=$((eqstats[STR]+5))
-                        eqstats[AGI]=$((eqstats[AGI]+5));;
+                        eqstats[AGI]=$((eqstats[AGI]+5))
+			activeElement="Wind";;
 	esac
 }
 

@@ -1,11 +1,14 @@
-source save.conf
+if [[ -f "save.conf" ]]; then
+        source "save.conf"
+fi
 declare -a kobanekoActiveList=( [0]="I need to find it… I need to find the sword…" 
 				[1]="I want to grow stronger-" 
 				[2]="Uhh… Tourism?" 
 				[3]="Why… do you talk like that…" 
 				[4]="Are you guys humans…? Or?")
 declare -a crowleyActiveList=("I was told to ask you about the sword by Kobaneko" "I’m looking for info on the unnamed sword" "What’s a Demonitorium?" "You look just like a regular person!" "Do you have any tips for me in combat, sir?" "Bye")
-declare -a whiteActiveList=("About You" "About Crowley" "About Kobaneko" "About Demon King" "Holy Judgement?" "About Nameless Katana")
+declare -a whiteActiveList=("About You" "About Crowley" "About Kobaneko" "About Demon King" "Holy Judgement?" "About Nameless Katana" "Goodbye")
+declare -a wolfActiveList=("Who are you" "Can you help me" "Goodbye")
 declare -a izanagiActiveList=("Who are you" "What do you want" "What happened to White")
 declare -A dialogueChecks=(
 ["dungLevelCrowleycheck"]=0
@@ -27,6 +30,73 @@ char(){
 
 	echo -e "${RED}${char}:${NC} ${yap}"
 	read -p ""
+}
+Wolf(){
+	echo {You see a disheveled old manwolf sitting crosslegged under shade}
+	talkstate=1
+        while [[ $talkstate=1 ]];
+        do
+        select rep in "${wolfActiveList[@]}"
+        do
+		case $rep in
+			"Who are you")
+				char Wolf "I used to be like you, but the pit proved too much for me in the end. I've been down here a long time."
+				break
+				;;
+			"Can you help me")
+                                char Wolf "You look like you have some potential. What would you like to know?"
+				wolfActiveList+=("Give me some advice")
+				wolfActiveList+=("Give me advanced advice")
+				unset wolfActiveList[1]			
+				break
+				;;
+			"Give me some advice")
+				case $class in
+					Farmer)
+                                              		 char Wolf "You're a hardy one aren't you. You don't have any particular weaknesses so you should make sure to focus on something. You'll gain STR and END every level up."
+                                                        ;;
+                                                ${agech1})
+                                                        char Wolf "You seem skilled but inexperienced, your fighting prowess is buffered by your holy techniques. Royal Vow allows you to heal with a chance of stunning your enemy, whereas Blood Vow strengthens you at the cost of HP."
+                                                        ;;
+                                                Destitute)
+                                                        char Wolf "Oh dear you seem to be the worst of the bunch don't you. Now how did a wretch like you make it this far."
+							char Wolf "You certianly have much more potential than I'd previously thought, to have made it this far. Your growth will be exceptional."
+                                                        ;;
+                                                Doctor)
+                                                        char Wolf "A healer like you? What happened to your oath of nonviolence, or do demons not count."
+							read -p "He lets out a coarse laugh."
+							char Wolf "The arts of war may not suit someone as delicate as you, perhaps consider investing in the magical arts"
+                                                        ;;
+                                                Ronin)
+                                                        char Wolf "Your strength is monstrous and your techniques are terrible. You may very well have been born to fill the demon realm with blood."
+							char Wolf "Take care that in your many battles that you do not tear yourself apart with your own techniques."
+                                                        ;;
+                                                Shinobi)
+                                                        char Wolf "Killing is what you do best, isn't it. I don't know what I could possibly tell you that would help."
+							char Wolf "You have tools of murder, you can strike a thousand times in one second and your techniques are myriad and versatile."
+                                                        ;;
+				esac
+				break
+                                ;;
+			"Give me advanced advice")
+					char Wolf "Buy equipment and items before you leave, make sure to equip them in the STATUS menu."
+					char Wolf "changing equipment and saving is done in the STATUS menu."
+					char Wolf "STR affects the strength of your hits and most techniques. 
+						   WIS affects the Doctor's Heal power and the Blood Transfusion technique."
+					char Wolf "INT affects Magic damage and certain techniques.
+						   GUI affects guard rate and all Scion techniques."
+					char Wolf "AGI affects multihit rate, stamina regeneration rate, Shinobi tools and techniques.
+						   END affects max health and max stamina."
+				break
+                                ;;
+			"Goodbye")
+				talkstate=0
+				break 2
+				;;
+		esac
+	done
+	done
+	
 }
 Tutorial(){
 	echo "[TUTORIAL]"
@@ -67,7 +137,7 @@ White(){
 	talkstate=1
         while [[ $talkstate=1 ]];
         do
-	select rep in ${whiteActiveList[@]}
+	select rep in "${whiteActiveList[@]}"
 	do
 		case $rep in
 			"About You")
@@ -91,7 +161,9 @@ White(){
 				char White "A tombstone almost, a pure fragment of the goddess used by her partner to seal her corpse at the very bottom of hell. Who knows what taking it would do."
 				char White "Of course, a warrior like yourself is beyond such technicalities."
                                 break;;
-			
+			"Goodbye")
+				talkstate=0
+				break 2;;
 		esac
 	done
 	done
@@ -209,17 +281,19 @@ Crowley(){
 					char Crowley "I’m impressed. Sure, I’ll tell you. The goddess slumbers deep within the earth, and the blade sleeps even deeper within her undying corpse. You must crawl and fight to the lowest level to obtain it."
 					char Crowley "Many have come before you and many have fallen. But I see a glint in your eye. See, some benefactors and I have strong vested interest in that blade, and we’re looking for associates to help us attain it. Get through the next two layers and come back to me."
 					char Crowley "I'm sure that mangy grimalkin has told you a lot as well. Do what you wish but be wary of vesting trust in a demon."
-					if [[ ${dialogueChecks[kobaguidecheck]} != 1 ]]; then
+					if [[ ${dialogueChecks[kobaguidecheck]} == 0 ]]; then
 					kobanekoActiveList+=("Crowley gave me some guidance.")
-	                                ${dialogueChecks[kobaguidecheck]}=1
-                                	fi
+	                                dialogueChecks[kobaguidecheck]=1
 					unset crowleyActiveList[1]
+                                	fi
 					break;;
 				"I’ve cleared the third floor")
 					char Crowley "You show unprecedented promise, my child. I think we are of a kind." 
 					char Crowley "You are privy to the existence of the Society of the Deep Blue, I’m sure? You may know us as librarians. Keepers of the occult and esoteric. In some sense that is our task in modernity. But this is merely a holdover from our true task for the past 500 years." 
 					char Crowley "Even as states and bloodlines dissolved, and power shifted from one to another. We remained the same, our irrefutable duty never changed. To protect mankind from the torment of demonkind."
 					char Crowley "As fellow humans, we share the same goals, and I continue to pray earnestly for your wellbeing. Like I mentioned, I wantyou to help us achieve our goals, don’t worry about the details for now. Just focus on getting through the next floor safely. It is guarded by an incredibly powerful demon from the last era. Take this charm and stay safe."
+					add_item CrowCharm
+					sleep 1
 					break;;
 				"I’ve cleared the fourth floor")
 					char Crowley "You are simply incredible, my child. I haven’t seen this much potential since Lord Minamoto. I must have mentioned this to you already, but there used to be a King. A King of Hell. Daimaou, the demons called it. A Demon Lord."
@@ -250,6 +324,10 @@ Kobaneko(){
         fi
         if [[ $dungLevel -gt 3 && ${dialogueChecks[dungLevelKobancheck]} == 1 ]]; then
                  dialogueChecks[dungLevelKobancheck]=2
+        fi
+	if [[ $dialogueChecks[endCrowCheck]=1 && ${dialogueChecks[dungLevelKobancheck]} == 2 ]]; then
+		 dialogueChecks[dungLevelKobancheck]=3
+                 kobanekoActiveList+=("Crowley wants me to use the Sword to subjugate demons")
         fi
 	talkstate=1
 	if [[ ${dialogueChecks[kobanBreak]} == 1 ]]; then
@@ -305,7 +383,7 @@ Kobaneko(){
 				if [[ ${dialogueChecks[kobamaoucheck]} != 1 ]]; then
                                 kobanekoActiveList+=("How was it before.")
 				crowleyActiveList+=("Kobaneko mentioned a demon king?")
-				${dialogueChecks[kobamaoucheck]}=1
+				dialogueChecks[kobamaoucheck]=1
                                 fi
 				break;;
 			"How was it before.")
@@ -335,7 +413,7 @@ Kobaneko(){
 						"I'm unsure")
 							char Kobaneko "You seek the blade for yourself, don’t you? You came here seeking power and you’re at the cusp of it."
 							char Kobaneko "Do what you humans do best and keep moving forward. The rest will fall into place eventually."
-							${dialogueChecks[endKobanCheck]}=1
+							dialogueChecks[endKobanCheck]=1
 							break;;
 						"No")
 							char Kobaneko "Even knowing our nature you still seek to protect us. You’re a curious one, ${name}."
@@ -351,7 +429,7 @@ Kobaneko(){
 				char Kobaneko "He was an unseen flash of pure white and rumbling thunder, and even though he was undoubtedly human, he moved with a viciousness unseen even among demonkind. In their grand ensuing battle, they slew each other."
 				char Kobaneko "This ‘sword’ was born soon after. It is unknown what was so special about their bout that caused this to happen, or if both events are even related, but we know for a fact that whoever wields it has the power to become a new Daimaou."
 				char Kobaneko "Whether protecting mankind is your wish, or obtaining absolute power is your wish, the only path to either is to take up this unholy mantle."
-				${dialogueChecks[kobasubjcheck]}=1
+				dialogueChecks[kobasubjcheck]=1
 				fi
 				char Kobaneko "I'll wait for you on the final floor."
 				break;;
@@ -407,7 +485,7 @@ FinalFloor(){
 	read -p "'Avenge...'"
 	echo ""
 	battle "${izanami[@]}"
-	if [[ ${dialogueChecks[endKobanCheck]} == 1 || ${dialogueChecks[endKobanCheck]} == 1 ]]; then
+	if [[ ${dialogueChecks[endKobanCheck]} == 1 || ${dialogueChecks[endCrowCheck]} == 1 ]]; then
 		read -p "You are successful in dispatching the goddess. Crowley steps in just behind you."
 		char Crowley "That was no goddess, merely the lingering embers of one. More akin to a demon than anything."
 		char Crowley "But your work is splendid nonetheless. All you need do now is simply reach out for it, and all the power is yours."
@@ -440,15 +518,12 @@ FinalFloor(){
 	do
 		case $choice in
 			"Take the Sword in your own Name")
-				echo "redeemed"
 				local ending="redeemed"
 				break;;
 			"Become the King of Hell")
-				echo "ascend"
 				local ending="ascend"
 				break;;
 			"Enslave demonkind in the name of Humanity")
-				echo "subjugate"
 				local ending="subjugate"
 				break;;
 		esac
@@ -545,32 +620,35 @@ Ending(){
 	ending=("$1") 
 	case $ending in
 		"redeemed")
-			echo "You manage to return to the human world, gold-silver blade in hand. The tale of your adventures in the pit spread far and wide, and you become something of a local legend."
-			echo "Your legend washes over your unseemly past and your popularity gets you mercenary work from powerful lords. You grow rich in treasure and favour, and retire not too long after."
-			echo "On a night like any other, while asleep in your home, an unassailable swarm of demons rolls over the land and you are consumed.";;
+			read -p "You manage to return to the human world, gold-silver blade in hand. The tale of your adventures in the pit spread far and wide, and you become something of a local legend."
+			read -p "Your legend washes over your unseemly past and your popularity gets you mercenary work from powerful lords. You grow rich in treasure and favour, and retire not too long after."
+			read -p "On a night like any other, while asleep in your home, an unassailable swarm of demons rolls over the land and you are consumed.";;
 		"ascend")
-			echo "As you wield the sword, ‘Hi-no-Kagutsuchi’, you feel demonic energy swell within you. Your body is permanently transformed. You can see much more than before and your power only seems to grow by the second. With this newfound strength, you set out into the realms of hell as the New Daimaou."
-			echo "Most demons you encounter wilt in your presence, some would simply show reverence. Others would challenge you for your title. You take back territory from demons that once belonged to Ichor."
-			echo "Eventually, Ichor is expanded out tremendously and the narrow pit that connected both worlds widens into a gaping maw as a result. Using your experience living in both, you allow for trade and communication to spur between both worlds."
-			echo "Demons and humans find more in common and you create a somewhat uneasy alliance between both races. Your image is immortalized in the center of Ichor as Daimaou ${name}";;
+			read -p "As you wield the sword, ‘Hi-no-Kagutsuchi’, you feel demonic energy swell within you. Your body is permanently transformed. You can see much more than before and your power only seems to grow by the second. With this newfound strength, you set out into the realms of hell as the New Daimaou."
+			read -p "Most demons you encounter wilt in your presence, some would simply show reverence. Others would challenge you for your title. You take back territory from demons that once belonged to Ichor."
+			read -p "Eventually, Ichor is expanded out tremendously and the narrow pit that connected both worlds widens into a gaping maw as a result. Using your experience living in both, you allow for trade and communication to spur between both worlds."
+			read -p "Demons and humans find more in common and you create a somewhat uneasy alliance between both races. Your image is immortalized in the center of Ichor as Daimaou ${name}";;
 		"subjugate")
-			echo "With the power of the Imperial Blade, you bring all of demonkind to heel. Though they wail and howl with ferocity, their bodies no longer belong to them."
-			echo "Leading your monstrous hoard out of the pit, you wash over the eastern half of the country like a plague, swallowing any arrant lord who dared to challenge your rule. Not long after you become known as an impossibly skilled sorcerer capable of commanding infinite terrible demons."
-			echo "Alongside the assistance of the Order of Blue and the shrewd Crowley, you take over the majority of Japan and entitle yourself as 'The Emperor Mandated by Hell'";;
+			read -p "With the power of the Imperial Blade, you bring all of demonkind to heel. Though they wail and howl with ferocity, their bodies no longer belong to them."
+			read -p "Leading your monstrous hoard out of the pit, you wash over the eastern half of the country like a plague, swallowing any arrant lord who dared to challenge your rule. Not long after you become known as an impossibly skilled sorcerer capable of commanding infinite terrible demons."
+			read -p "Alongside the assistance of the Order of Blue and the shrewd Crowley, you take over the majority of Japan and entitle yourself as 'The Emperor Mandated by Hell'";;
 		"whitewar")
-			echo "You become as light, your body and blade is weightless and your mind is scattered against time and space. You are engulfed in pure white and for a time, you sleep."
-			echo "You don’t know for how long, but soon enough you awaken elsewhere. Before you stands the visage of a woman and in front of her lay a terrible demon wielding a flaming sword."
-			echo "Your memories are a haze and you are unsure where you are, but you understand deep within yourself that you are here to slaughter. A feeling so deep and inscribed that it seemed as though it was what you were born for."
-			echo "And so with thundering steel, the fated clash begins anew.";;
+			read -p "You become as light, your body and blade is weightless and your mind is scattered against time and space. You are engulfed in pure white and for a time, you sleep."
+			read -p "You don’t know for how long, but soon enough you awaken elsewhere. Before you stands the visage of a woman and in front of her lay a terrible demon wielding a flaming sword."
+			read -p "Your memories are a haze and you are unsure where you are, but you understand deep within yourself that you are here to slaughter. A feeling so deep and inscribed that it seemed as though it was what you were born for."
+			read -p "And so with thundering steel, the fated clash begins anew.";;
 	esac
 	Credits
 }
 
 Credits(){
 	echo "developed in vi by AxiomDays" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols)
+	sleep 1
 	echo ""
 	echo "written by AxiomDays" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols)
+	sleep 1
 	echo ""
 	echo "Thanks for Playing!" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols)
+	sleep 1
 	exit
 }

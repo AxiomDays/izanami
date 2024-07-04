@@ -64,7 +64,6 @@ diedYet=0
 
 if [[ -f "save.conf" ]]; then
 	source "save.conf"
-	echo "source??"
 fi
 	
 if [[ "${flags[loadflag]}" < 1 ]]; then
